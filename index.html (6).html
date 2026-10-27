@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<!-- WorkRight v4: texture background, highlighted AI Agent + face camera, bigger SMS/Call feature, phone number linked to user ID -->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WorkRight: your work, your right</title>
+<style>
+:root{--bg:#000;--card:#0a0f0b;--ink:#e9f5ec;--mut:#8fa596;--line:#1e2b22;--g:#22c55e;--g2:rgba(34,197,94,.14);--ok:#4ade80;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme=dark]){--bg:#000}}
+*{box-sizing:border-box}body{display:flex;flex-direction:column}.hero{order:-3}.mq{order:-2}#demo{order:-1}html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background-color:var(--bg);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26'><circle cx='2' cy='2' r='1.1' fill='%2322c55e' fill-opacity='.22'/></svg>"),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .13 0 0 0 0 .77 0 0 0 0 .37 0 0 0 .14 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");color:var(--ink);font-family:system-ui,"Segoe UI","Noto Sans","Noto Sans Devanagari","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Bengali",sans-serif;line-height:1.55;overflow-x:hidden}
+button,input,select{font:inherit;color:inherit}
+.btn{min-height:46px;padding:.5rem 1.2rem;border-radius:12px;border:1px solid #2a3b2f;background:var(--card);font-weight:700;cursor:pointer;transition:.2s}
+.btn.pri{background:var(--g);border-color:var(--g);color:#000}.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.97)}
+#prog{position:fixed;left:0;top:0;height:3px;width:0;background:var(--g);z-index:90}
+#splash{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;transition:opacity .6s,visibility .6s}
+#splash.out{opacity:0;visibility:hidden}
+.sp{text-align:center;animation:pop 1s cubic-bezier(.2,1.4,.4,1) both}
+.sp .lg{width:92px;height:92px;border-radius:26px;background:var(--g);display:grid;place-items:center;margin:0 auto 1rem;font-size:2.6rem;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:ring 1.6s .5s infinite}
+.sp h1{font-size:clamp(2.2rem,8vw,3.6rem);margin:0;letter-spacing:-.03em}.sp h1 span{color:var(--g)}.sp p{color:var(--mut);margin:.3rem 0 0}
+@keyframes pop{0%{transform:scale(.3);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+@keyframes ring{to{box-shadow:0 0 0 38px rgba(34,197,94,0)}}
+nav{position:fixed;inset:0 0 auto;z-index:60;display:flex;align-items:center;gap:1rem;padding:calc(.7rem + env(safe-area-inset-top,0px)) clamp(1rem,5vw,4rem) .7rem;transition:.25s}
+nav.sc{background:rgba(0,0,0,.94);backdrop-filter:blur(10px);box-shadow:0 1px 0 var(--line)}
+nav b{font-size:1.25rem;letter-spacing:-.02em}nav b span{color:var(--g)}nav .s{flex:1}nav a{color:var(--mut);text-decoration:none;font-weight:600;font-size:.92rem}nav a:hover{color:var(--ink)}
+nav select{background:var(--card);border:1px solid #2a3b2f;border-radius:10px;padding:.4rem .6rem;min-height:40px}
+.sec{padding:5rem clamp(1rem,5vw,4rem)}.w{max-width:72rem;margin:0 auto}
+h2{font-size:clamp(1.7rem,3.6vw,2.5rem);letter-spacing:-.025em;line-height:1.15;margin:0 0 .6rem}.sub{color:var(--mut);font-size:1.08rem;max-width:40rem;margin:0 0 2.2rem}
+.hero{padding-top:8rem;position:relative;overflow:hidden}.hero:before{display:none}
+.hg{display:grid;grid-template-columns:1.1fr 1fr;gap:3rem;align-items:center;position:relative}
+.hero h1{font-size:clamp(2.2rem,5.2vw,3.8rem);line-height:1.1;letter-spacing:-.03em;margin:0 0 1rem}.hero h1 em{font-style:normal;color:var(--g)}
+.lead{color:var(--mut);font-size:1.15rem;max-width:34rem;margin:0 0 1.6rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.4rem}.chips button{border:1px solid #2a3b2f;background:var(--card);border-radius:99px;padding:.3rem .8rem;cursor:pointer;font-weight:600;font-size:.9rem;min-height:36px}.chips button[aria-pressed=true]{background:var(--g);color:#000;border-color:var(--g)}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:1.4rem;padding:2rem clamp(1rem,5vw,4rem);border-block:1px solid var(--line);text-align:center}
+.strip b{display:block;font-size:2.6rem;color:var(--g);line-height:1}.strip span{color:var(--mut);font-size:.9rem}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1.1rem}
+.ft{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.4rem;transition:.25s}.ft:hover{border-color:var(--g);transform:translateY(-4px)}
+.ft i{font-style:normal;display:grid;place-items:center;width:3rem;height:3rem;border-radius:12px;background:var(--g2);font-size:1.5rem;margin-bottom:.8rem}
+.ft h3{margin:0 0 .3rem}.ft p{margin:0 0 .6rem;color:var(--mut)}.ft ul{margin:0;padding-left:1.1rem;color:var(--mut);font-size:.92rem}.ft li{margin:.2rem 0}
+.rv{opacity:0;transform:translateY(34px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1),filter .8s;transition-delay:var(--d,0s)}.rv.l{transform:translateX(-50px)}.rv.r{transform:translateX(50px)}.rv.z{transform:scale(.82)}.rv.fl{transform:perspective(800px) rotateX(22deg) translateY(36px)}.rv.bl{filter:blur(12px);transform:translateY(20px)}.rv.show{opacity:1;transform:none;filter:none}
+/* demo */
+#demo{background:rgba(0,0,0,.6);border-block:1px solid rgba(34,197,94,.45)}.dg{display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center}
+.tabs{display:inline-flex;border:1px solid #2a3b2f;border-radius:12px;overflow:hidden;margin-bottom:1rem}.tabs button{border:0;background:var(--card);padding:.6rem 1.3rem;font-weight:700;cursor:pointer;min-height:46px}.tabs button[aria-pressed=true]{background:var(--g);color:#000}
+.phone{width:19.5rem;max-width:100%;border:10px solid #1c2a20;border-radius:38px;background:#050805;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.7);margin:0 auto}
+.ph{background:#1c2a20;padding:.55rem 1rem;display:flex;justify-content:space-between;font-size:.8rem}
+.th{height:20rem;overflow:auto;padding:.7rem;display:flex;flex-direction:column;gap:.5rem}
+.bub{max-width:88%;padding:.5rem .75rem;border-radius:16px;font-size:.9rem;animation:bp .3s ease both}.bub small{display:block;opacity:.6;font-size:.7rem}
+.out{align-self:flex-end;background:var(--g);color:#000;border-bottom-right-radius:4px}.in{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+@keyframes bp{from{opacity:0;transform:translateY(10px) scale(.95)}}
+.dots{display:inline-flex;gap:3px}.dots i{width:6px;height:6px;border-radius:50%;background:var(--mut);animation:db 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}@keyframes db{50%{transform:translateY(-5px)}}
+.qk{display:flex;flex-wrap:wrap;gap:.35rem;padding:.4rem .6rem;border-top:1px solid var(--line)}.qk button{border:1px solid #2a3b2f;background:var(--card);border-radius:99px;padding:.25rem .7rem;font-size:.8rem;font-weight:700;cursor:pointer;min-height:34px}
+.sr{display:flex;gap:.4rem;padding:.5rem;border-top:1px solid var(--line)}.sr input{flex:1;min-width:0;background:#000;border:1px solid #2a3b2f;border-radius:10px;padding:.4rem .6rem;min-height:42px}
+.cv{height:14rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;text-align:center;padding:1rem}
+.av{width:64px;height:64px;border-radius:50%;background:var(--g2);display:grid;place-items:center;font-size:1.9rem}.av.ring{animation:ring 1.2s infinite}
+.tr{height:6.5rem;overflow:auto;padding:.5rem .8rem;font-size:.82rem;color:var(--mut);border-top:1px solid var(--line)}.tr p{margin:.2rem 0}.tr .y{color:var(--g);text-align:right}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;padding:.5rem}.keys button{min-height:42px;border-radius:12px;border:1px solid #2a3b2f;background:var(--card);font-weight:800;font-size:1.1rem;cursor:pointer}
+.callb{margin:.2rem .6rem .6rem;width:calc(100% - 1.2rem);min-height:46px;border-radius:99px;border:0;background:#1fa85a;color:#fff;font-weight:800;cursor:pointer}.callb.end{background:#d4403f}
+.pts{list-style:none;padding:0;margin:1.4rem 0 0;display:grid;gap:.7rem}.pts li{display:flex;gap:.7rem;color:var(--mut)}.pts li b{color:var(--ink)}.pts span{flex:none;width:2rem;height:2rem;border-radius:9px;background:var(--g2);display:grid;place-items:center}
+/* personal */
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.3rem}
+label{display:block;font-weight:700;margin:.7rem 0 .2rem;font-size:.9rem}.box input,.box select{width:100%;background:#000;border:1px solid #2a3b2f;border-radius:10px;padding:.5rem .7rem;min-height:44px}
+.slip div{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--line)}.slip .t{font-size:1.4rem;font-weight:800;color:var(--g);border:0}
+.tag{display:inline-block;font-size:.78rem;font-weight:700;padding:.15rem .6rem;border-radius:99px;background:rgba(74,222,128,.13);color:var(--ok)}.tag.b{background:rgba(242,96,95,.14);color:#f2605f}
+.sos{width:100%;min-height:56px;border-radius:14px;border:0;background:#d4403f;color:#fff;font-weight:800;font-size:1.05rem;cursor:pointer}
+.cta{background:var(--g);color:#000;border-radius:20px;text-align:center;padding:3.2rem 1.5rem}.cta h2{margin-bottom:1.2rem}.cta .btn{background:#000;color:#fff;border-color:#000}
+footer{padding:2rem;text-align:center;color:var(--mut);font-size:.9rem}
+#toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,200%);background:var(--ink);color:#000;padding:.8rem 1.1rem;border-radius:12px;z-index:95;transition:.3s;max-width:90vw}#toast.show{transform:translate(-50%,0)}
+@media(max-width:860px){.hg,.dg,.pg,.hg2{grid-template-columns:1fr}nav a,.navhl{display:none}.hero{padding-top:6.5rem}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none;filter:none}.mchat .m,.mscan .ok{opacity:1}}
+[hidden]{display:none!important}
+body.in>:not(#appv):not(#demo):not(#cbf):not(#cbp):not(#cfb):not(#toast):not(#splash):not(#prog):not(script):not(dialog):not(style){display:none!important}
+body.in #demo{order:5}
+#appv{display:none}body.in #appv{display:block!important}
+dialog{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:18px;width:min(92vw,26rem);padding:1.4rem}dialog::backdrop{background:rgba(0,0,0,.8)}
+dialog input,dialog select,.box textarea{width:100%;background:#000;border:1px solid #2a3b2f;border-radius:10px;padding:.5rem .7rem;min-height:44px}.box textarea{min-height:6rem}
+.hint{color:var(--mut);font-size:.88rem;background:var(--g2);border-radius:10px;padding:.6rem .8rem}
+.ah{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;padding:1rem clamp(1rem,5vw,4rem);border-bottom:1px solid var(--line)}.ah b{font-size:1.25rem}.ah b span{color:var(--g)}.ah .s{flex:1}
+.at{display:flex;gap:.4rem;flex-wrap:wrap;max-width:44rem;margin:1rem auto 0;padding:0 1rem}.at button{border:1px solid #2a3b2f;background:var(--card);border-radius:99px;padding:.4rem 1rem;font-weight:700;cursor:pointer;min-height:42px}.at button[aria-pressed=true]{background:var(--g);color:#000;border-color:var(--g)}
+.ab{max-width:44rem;margin:0 auto;padding:1rem 1rem 4rem;animation:bp .4s ease both}.ab .box{margin-bottom:1rem}
+.r2{display:flex;justify-content:space-between;gap:.5rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.stp{display:flex;gap:.3rem;margin:.5rem 0}.stp i{flex:1;height:.5rem;border-radius:9px;background:#17231b}.stp i.on{background:var(--g)}
+
+.ft i{color:var(--g)}.ft i svg{width:1.5rem;height:1.5rem}.sp .lg{color:#000}.sp .lg svg{width:3rem;height:3rem}.av{color:var(--g)}.av svg{width:1.9rem;height:1.9rem}
+[data-i] svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nk{width:19.5rem;max-width:100%;margin:0 auto;padding:1.1rem 1.2rem 1.7rem;border-radius:46px 46px 60px 60px/40px 40px 80px 80px;background:#14201a;box-shadow:0 30px 70px rgba(0,0,0,.7),inset 0 2px 0 rgba(255,255,255,.1)}
+.spk{width:3.4rem;height:.35rem;border-radius:9px;background:#000;margin:.2rem auto .4rem}.br{text-align:center;font-weight:800;letter-spacing:.35em;font-size:.7rem;color:#9db3a3;margin:0 0 .7rem}
+.scr{background:#050805;border-radius:16px;padding:.55rem;box-shadow:inset 0 2px 8px #000}
+.lcdp{--lc:#052a12;--lb:#7ddc98;background:var(--lb);color:var(--lc);border-radius:8px;font-family:"Courier New",ui-monospace,monospace;font-weight:700;overflow:hidden}
+.lcdp .ph{background:var(--lc);color:var(--lb);padding:.25rem .6rem;font-size:.72rem}.lcdp .th{height:12.5rem;padding:.5rem}
+.lcdp .bub{border-radius:4px;font-size:.8rem}.lcdp .bub.in{background:transparent;border:1px solid var(--lc);color:var(--lc)}.lcdp .bub.out{background:var(--lc);color:var(--lb)}.lcdp .bub small{opacity:.7}
+.lcdp .qk,.lcdp .sr{border-top:1px solid var(--lc);padding:.35rem}.lcdp .qk button{background:transparent;border:1px solid var(--lc);border-radius:3px;color:var(--lc);font-size:.66rem;min-height:30px;font-family:inherit;padding:.2rem .5rem}
+.lcdp .sr input{background:transparent;border:1px solid var(--lc);border-radius:3px;color:var(--lc);min-height:34px;font-family:inherit;font-size:.78rem}.lcdp .sr input::placeholder{color:#2f7a4a}
+.lcdp .btn,.lcdp .btn.pri{background:var(--lc);color:var(--lb);border:0;border-radius:3px;min-height:34px;padding:.2rem .6rem;font-family:inherit}
+.lcdp .cv{height:8.5rem;padding:.5rem}.lcdp .av{background:transparent;border:2px solid var(--lc);color:var(--lc);width:50px;height:50px;border-radius:50%}.lcdp .av svg{width:1.4rem;height:1.4rem}.lcdp small{color:#1b5a30!important}
+.lcdp .tr{height:5.2rem;color:var(--lc);border-top:1px solid var(--lc);font-size:.74rem}.lcdp .tr .y{color:var(--lc)}
+.lcdp .callb{background:var(--lc);border-radius:3px;margin:.2rem .5rem .5rem;width:calc(100% - 1rem);min-height:36px;color:var(--lb);font-family:inherit}.lcdp .callb.end{background:#7a1f1f;color:#fff}.lcdp .dots i{background:var(--lc)}
+.sks{display:flex;justify-content:space-between;font-size:.62rem;font-weight:800;color:#9db3a3;letter-spacing:.1em;margin-top:.7rem;padding:0 .3rem}
+.ctl{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.6rem;margin:.4rem 0 .8rem}
+.cg,.cr{height:2.5rem;border-radius:12px;border:0;cursor:pointer;font-weight:800;font-size:.72rem;letter-spacing:.1em;color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.35)}.cg{background:#23804a}.cr{background:#b23b3b}
+.nav2{width:4rem;height:4rem;border-radius:50%;background:#2f4a38;box-shadow:inset 0 -3px 6px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.5);display:grid;place-items:center;color:#dff5e5;font-size:.62rem;letter-spacing:.1em;font-weight:800}
+.nk .keys{padding:0;gap:.5rem}.nk .keys button{min-height:46px;border-radius:14px 14px 20px 20px/10px 10px 20px 20px;background:#cfe8d6;border:0;color:#06140b;font-size:1.1rem;font-weight:800;box-shadow:0 3px 0 #6e8576;line-height:1.1}
+.nk .keys button small{display:block;font-size:.5rem;letter-spacing:.12em;color:#44594b;font-weight:700;min-height:.6rem}.nk .keys button:active{transform:translateY(2px);box-shadow:0 1px 0 #6e8576}
+
+.ab,.at{max-width:56rem}.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:.7rem;margin-bottom:1rem}.kp div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.8rem}.kp span{display:block;color:var(--mut);font-size:.78rem}.kp b{font-size:1.5rem}
+.wk{display:flex;align-items:flex-end;gap:.6rem;height:9.5rem}.wk div{flex:1;text-align:center;font-size:.74rem;color:var(--mut);display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:.2rem}.wk i{display:block;background:var(--g);border-radius:6px 6px 0 0;min-height:3px}.wk b{color:var(--ink);font-size:.74rem}
+.ab table{width:100%;border-collapse:collapse;font-size:.86rem;min-width:30rem}.ab th{color:var(--mut);font-weight:600;text-align:left;font-size:.76rem;padding:.4rem .5rem;border-bottom:1px solid var(--line)}.ab td{padding:.55rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}.ab td small{display:block;color:var(--mut);font-size:.74rem}.tw{overflow-x:auto}
+.tl2{border-left:2px solid var(--line);margin-left:.4rem;padding-left:1rem}.tl2>div{position:relative;margin-bottom:.9rem;font-size:.9rem}.tl2>div:before{content:"";position:absolute;left:-1.38rem;top:.4rem;width:.6rem;height:.6rem;border-radius:50%;background:var(--g)}.tl2 small{display:block;color:var(--mut);font-size:.76rem}
+.tag.am{background:rgba(251,191,36,.14);color:#fbbf24}.tag.nt{background:#17231b;color:var(--mut)}
+.fl2{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.8rem}.fl2 button{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:.3rem .9rem;font-weight:600;font-size:.85rem;cursor:pointer;min-height:36px}.fl2 button[aria-pressed=true]{background:var(--g);color:#000;border-color:var(--g)}
+
+#cbf{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:70;display:flex;align-items:center;gap:.5rem;min-height:54px;padding:.5rem 1.2rem;border:0;border-radius:99px;background:var(--g);color:#000;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.6)}#cbf svg{width:1.3rem;height:1.3rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#cbp{position:fixed;right:1rem;bottom:calc(5.4rem + env(safe-area-inset-bottom,0px));z-index:75;width:min(24rem,calc(100vw - 2rem));height:min(34rem,70vh);display:flex;flex-direction:column;background:var(--card);border:1px solid var(--g);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.7);overflow:hidden;animation:bp .25s ease both}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.8rem 1rem;background:#050805;border-bottom:1px solid var(--line)}.ch small{display:block;color:var(--mut);font-size:.72rem}.ch button{border:1px solid var(--line);background:transparent;border-radius:8px;padding:.3rem .7rem;cursor:pointer;font-weight:600;min-height:36px}
+.cm{flex:1;overflow:auto;padding:.8rem;display:flex;flex-direction:column;gap:.5rem}.cm>div{max-width:88%;padding:.55rem .8rem;border-radius:12px;font-size:.9rem;white-space:pre-line}.cm .u{align-self:flex-end;background:var(--g);color:#000;border-bottom-right-radius:3px}.cm .b{align-self:flex-start;background:#050805;border:1px solid var(--line);border-bottom-left-radius:3px}
+.cm .lk{display:block;margin-top:.5rem;border:1px solid var(--g);background:transparent;color:var(--g);border-radius:8px;padding:.3rem .7rem;font-weight:700;cursor:pointer;min-height:34px}
+.cq{display:flex;gap:.4rem;overflow-x:auto;padding:.5rem .8rem;border-top:1px solid var(--line)}.cq button{flex:none;border:1px solid var(--line);background:transparent;border-radius:99px;padding:.3rem .8rem;font-size:.78rem;font-weight:600;cursor:pointer;min-height:34px;white-space:nowrap}.cq button:hover{border-color:var(--g)}
+.cs{display:flex;gap:.4rem;padding:.6rem;border-top:1px solid var(--line)}.cs input{flex:1;min-width:0;background:#050805;border:1px solid var(--line);border-radius:10px;padding:.4rem .7rem;min-height:42px}
+@media(max-width:520px){#cbf span{display:none}#cbf{padding:.5rem .9rem}#cfb span{display:none}#cfb{padding:.5rem .9rem}}
+
+/* scroll animations */
+.sec h2:after{content:"";display:block;height:4px;width:0;background:var(--g);border-radius:4px;margin-top:.5rem;transition:width .9s .35s cubic-bezier(.2,.7,.2,1)}.sec h2.show:after{width:3.5rem}.cta h2:after{display:none}
+.ft.show i{animation:pop2 .7s .25s both}
+@keyframes pop2{0%{transform:scale(.4) rotate(-20deg)}70%{transform:scale(1.12) rotate(4deg)}100%{transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(26px);filter:blur(6px)}}
+.hero .hg>.rv:first-child>*{animation:rise .9s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(1.9s + var(--k,0)*.15s)}
+nav a.act{color:var(--g)}
+.nk{transform:rotate(var(--rt,0deg));transition:transform .2s ease-out;animation:nkg 3s ease-in-out infinite}
+@keyframes nkg{50%{box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 46px 6px rgba(34,197,94,.35),inset 0 2px 0 rgba(255,255,255,.1)}}
+.nk.buzz{animation:buzz .45s}
+@keyframes buzz{0%,100%{translate:0}20%{translate:-5px 0}40%{translate:5px 0}60%{translate:-3px 0}80%{translate:3px 0}}
+.ab.stg>*{animation:bp .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*.07s)}
+
+/* face camera */
+#cfb{position:fixed;left:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:70;display:flex;align-items:center;gap:.5rem;min-height:54px;padding:.5rem 1.2rem;border:1px solid var(--g);border-radius:99px;background:var(--card);color:var(--g);font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.6)}#cfb svg{width:1.3rem;height:1.3rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#fc{width:min(94vw,30rem);max-height:92vh;overflow:auto}
+.fw{position:relative;aspect-ratio:4/3;background:#050805;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:.6rem 0;display:grid;place-items:center;color:var(--mut);font-size:.9rem}
+.fw video,.fw img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.fw video{transform:scaleX(-1);display:none}
+.fw.live video{display:block}.fw.live .ph0{display:none}
+.fw.live:after{content:"";position:absolute;left:24%;top:15%;width:52%;height:70%;border:3px dashed var(--g);border-radius:50%;pointer-events:none}
+.fw.live:before{content:"";position:absolute;left:24%;width:52%;height:2px;background:var(--g);box-shadow:0 0 12px var(--g);z-index:2;animation:scan 2s ease-in-out infinite alternate}
+.fw.snapped:before,.fw.snapped:after{display:none}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:4}.flash.go{animation:fl .4s ease-out}
+@keyframes fl{from{opacity:.95}to{opacity:0}}
+@keyframes scan{from{top:15%}to{top:85%}}
+#fst{min-height:2.8rem;margin:.2rem 0 .6rem;color:var(--mut);font-size:.92rem;border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;background:#000}
+.fb{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}.fb .wide{grid-column:1/-1}.fb .btn:disabled{opacity:.5;cursor:wait}
+.fph{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--g)}
+
+/* FairShift/WorkRight requested polish: elevate the core attendance routes */
+#demo{position:relative;background:radial-gradient(ellipse at 15% 20%,rgba(34,197,94,.13),transparent 42%),radial-gradient(ellipse at 90% 80%,rgba(34,197,94,.08),transparent 38%),rgba(0,0,0,.72)}
+#demo:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(34,197,94,.16) .8px,transparent .8px);background-size:18px 18px;opacity:.28}
+#demo>.w{position:relative;z-index:1}
+#demo .nk{border-color:rgba(34,197,94,.7);box-shadow:0 28px 75px rgba(0,0,0,.75),0 0 0 1px rgba(34,197,94,.14),0 0 34px rgba(34,197,94,.14)}
+#demo .tabs{box-shadow:0 0 0 3px rgba(34,197,94,.07)}
+#helpers .hcard{position:relative;overflow:hidden}
+#helpers .hcard:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 20%,rgba(34,197,94,.06) 48%,transparent 72%);transform:translateX(-120%);animation:sheen 7s ease-in-out infinite}
+#helpers .hcard:nth-child(2):after{animation-delay:1.8s}
+@keyframes sheen{0%,65%,100%{transform:translateX(-120%)}35%{transform:translateX(120%)}}
+#demo .hint{border:1px solid rgba(34,197,94,.25)}
+@media(max-width:860px){#demo .nk{margin-top:.4rem}}
+/* ===== v4 ===== */
+.hl{animation:hlp 2.2s ease-out infinite}
+@keyframes hlp{0%{box-shadow:0 0 0 0 rgba(34,197,94,.75)}100%{box-shadow:0 0 0 20px rgba(34,197,94,0)}}
+.bdg{font-style:normal;font-size:.62rem;font-weight:800;letter-spacing:.08em;background:#000;color:var(--g);border:1px solid var(--g);border-radius:99px;padding:0 .4rem;line-height:1.5}
+.navhl{border-color:var(--g);color:var(--g);min-height:40px}
+.mq{overflow:hidden;border-block:1px solid var(--line);background:#000;padding:.75rem 0;white-space:nowrap}
+.mt{display:inline-flex;animation:mq 30s linear infinite}.mq:hover .mt{animation-play-state:paused}
+.mg{display:inline-flex;gap:3rem;padding-right:3rem}.mg span{font-weight:800;letter-spacing:.08em;color:var(--g);font-size:.95rem}.mg span b{color:var(--ink)}
+@keyframes mq{to{transform:translateX(-50%)}}
+.pulse{animation:hlp 2s ease-out infinite}
+.pipe{display:flex;align-items:center;gap:.4rem;margin:1.2rem 0;padding:1rem;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.pnode{flex:none;text-align:center;min-width:5.4rem}.pnode span{display:grid;place-items:center;width:2.6rem;height:2.6rem;margin:0 auto .3rem;border-radius:12px;background:var(--g2);color:var(--g)}.pnode span svg{width:1.4rem;height:1.4rem}
+.pnode small{display:block;color:var(--mut);font-size:.68rem}.pnode b{display:block;font-size:.82rem;word-break:break-word}
+.pl{flex:1;height:2px;background:var(--line);position:relative;min-width:1rem}.pl:after{content:"";position:absolute;top:-3px;left:0;width:8px;height:8px;border-radius:50%;background:var(--g);animation:trav 1.8s linear infinite}
+@keyframes trav{from{left:0}to{left:calc(100% - 8px)}}
+.pipe.ok .pl{background:var(--g)}
+#pp3.pop{animation:pop2 .6s both}
+#sp{width:100%;background:#000;border:1px solid #2a3b2f;border-radius:10px;padding:.5rem .7rem;min-height:44px}
+#lk{margin:.5rem 0}
+.sig{display:inline-flex;gap:2px;align-items:flex-end;height:12px}.sig i{width:3px;background:currentColor;animation:sg 1.2s ease-in-out infinite alternate}
+.sig i:nth-child(1){height:4px}.sig i:nth-child(2){height:7px;animation-delay:.15s}.sig i:nth-child(3){height:10px;animation-delay:.3s}.sig i:nth-child(4){height:12px;animation-delay:.45s}
+@keyframes sg{from{opacity:.3}to{opacity:1}}
+.eq{display:none;gap:3px;height:20px;align-items:flex-end}.talk .eq{display:flex}.eq i{width:4px;height:20px;background:var(--lc);animation:eqb .7s ease-in-out infinite alternate;transform-origin:bottom}
+.eq i:nth-child(2){animation-delay:.1s}.eq i:nth-child(3){animation-delay:.25s}.eq i:nth-child(4){animation-delay:.05s}.eq i:nth-child(5){animation-delay:.2s}
+@keyframes eqb{from{transform:scaleY(.2)}to{transform:scaleY(1)}}
+.hg2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.hcard{background:var(--card);border:1px solid var(--g);border-radius:18px;padding:1.6rem;animation:glw 3s ease-in-out infinite}
+@keyframes glw{50%{box-shadow:0 0 30px rgba(34,197,94,.35)}}
+.hcard h3{font-size:1.5rem;margin:.6rem 0 .3rem}.hcard p{color:var(--mut);margin:0 0 1rem}
+.mchat{background:#000;border:1px solid var(--line);border-radius:14px;padding:.8rem;display:flex;flex-direction:column;gap:.5rem;min-height:9.5rem;margin-bottom:1rem}
+.mchat .m{max-width:92%;padding:.45rem .7rem;border-radius:12px;font-size:.88rem;opacity:0}
+.mchat .m1{align-self:flex-end;background:var(--g);color:#000;animation:c1 7s infinite}
+.mchat .sw{position:relative;min-height:4rem}.mchat .sw .m{position:absolute;left:0;top:0;background:var(--card);border:1px solid var(--line)}
+.mchat .m2{animation:c2 7s infinite}.mchat .m3{animation:c3 7s infinite}
+@keyframes c1{0%{opacity:0;transform:translateY(8px)}8%,92%{opacity:1;transform:none}100%{opacity:0}}
+@keyframes c2{0%,18%{opacity:0}24%,42%{opacity:1}48%,100%{opacity:0}}
+@keyframes c3{0%,46%{opacity:0;transform:translateY(8px)}54%,92%{opacity:1;transform:none}100%{opacity:0}}
+.mscan{position:relative;height:9.5rem;background:#000;border:1px solid var(--line);border-radius:14px;margin-bottom:1rem;overflow:hidden}
+.mscan .ov{position:absolute;left:50%;top:50%;width:5.2rem;height:6.6rem;margin:-3.3rem 0 0 -2.6rem;border:3px dashed var(--g);border-radius:50%}
+.mscan .sl{position:absolute;left:50%;width:5.2rem;margin-left:-2.6rem;height:2px;background:var(--g);box-shadow:0 0 12px var(--g);animation:scan2 2.2s ease-in-out infinite alternate}
+@keyframes scan2{from{top:20%}to{top:80%}}
+.mscan .ok{position:absolute;right:.7rem;top:.7rem;opacity:0;animation:c4 4.4s infinite}
+@keyframes c4{0%,55%{opacity:0;transform:scale(.7)}65%,95%{opacity:1;transform:none}100%{opacity:0}}
+</style></head><body>
+<div id="prog"></div>
+<div id="splash"><div class="sp"><div class="lg" data-i="shield"></div><h1>Work<span>Right</span></h1><p>Your work, your right</p></div></div>
+<nav id="nv"><b>Work<span>Right</span></b><span class="s"></span><a href="#demo">SMS &amp; Call</a><a href="#helpers">AI &amp; Camera</a><a href="#features">Features</a><a href="#you">For you</a>
+<button class="btn navhl hl" data-ai>AI Agent</button><button class="btn navhl hl" data-fc>Camera</button>
+<button class="btn" data-o="in" style="min-height:40px">Sign in</button><button class="btn pri" data-o="up" style="min-height:40px">Sign up</button><select id="lsel" aria-label="Language"></select></nav>
+
+<header class="sec hero"><div class="w hg"><div class="rv show"><h1 id="h1"></h1><p class="lead" id="lead"></p>
+<div style="display:flex;gap:.6rem;flex-wrap:wrap"><a href="#demo"><button class="btn pri hl">Try SMS &amp; Call</button></a><button class="btn" data-o="up">Sign up</button><a href="#helpers"><button class="btn">AI Agent and Camera</button></a></div>
+<div class="chips" id="chips" role="group" aria-label="Choose language"></div></div>
+<div class="phone rv r" id="hp" style="--d:.2s"><div class="ph"><span>WorkRight</span><span>08:02</span></div><div class="cv" style="height:auto;padding:1.4rem"><div class="av" data-i="check"></div><b id="hc">Checked in</b><div class="tag">On time</div><p style="color:var(--mut);margin:.4rem 0 0;font-size:.9rem" id="hw">Ravi, 6.5 of 8 hours today</p></div></div></div></header>
+
+<div class="mq" aria-hidden="true"><div class="mt"><div class="mg"><span>DEMO SMS <b>CHECKIN</b></span><span>DEMO CALL · PRESS <b>1</b></span><span>YOUR NUMBER = YOUR ID</span><span>WORKS ON ANY BASIC PHONE</span><span>BACKEND NEEDED FOR REAL SMS/CALLS</span></div><div class="mg"><span>DEMO SMS <b>CHECKIN</b></span><span>DEMO CALL · PRESS <b>1</b></span><span>YOUR NUMBER = YOUR ID</span><span>WORKS ON ANY BASIC PHONE</span><span>BACKEND NEEDED FOR REAL SMS/CALLS</span></div></div></div>
+
+<div class="strip"><div class="rv"><b data-n="11">0</b><span>languages</span></div><div class="rv" style="--d:.08s"><b data-n="3">0</b><span>ways: app, SMS, call</span></div><div class="rv" style="--d:.16s"><b data-n="0" data-t="₹0">0</b><span>cost to use SMS and calls</span></div><div class="rv" style="--d:.24s"><b data-n="24">0</b><span>hour SOS help</span></div></div>
+
+<section class="sec" id="helpers"><div class="w"><h2 class="rv">Two smart helpers, one tap away</h2><p class="sub rv">Ask the AI Agent anything about your work, or just show your face to mark attendance.</p>
+<div class="hg2">
+<div class="hcard rv l"><span class="tag">AI Agent</span><h3>Ask it. Or tell it to act.</h3><p>Answers from your own pay, attendance and reports. Say "Mark me present" and it records it for your ID.</p>
+<div class="mchat" aria-hidden="true"><div class="m m1">What is my pay this week?</div><div class="sw"><div class="m m2"><span class="dots"><i></i><i></i><i></i></span></div><div class="m m3">About ₹4,024 take home: 6 days plus 2.5 h overtime, after PF.</div></div></div>
+<button class="btn pri hl" data-ai>Open AI Agent</button></div>
+<div class="hcard rv r"><span class="tag">Camera attendance</span><h3>Look, tap, present.</h3><p>Type your ID, take a photo, and your attendance is marked with the photo saved in your register.</p>
+<div class="mscan" aria-hidden="true"><div class="ov"></div><div class="sl"></div><span class="tag ok">Present 08:02</span></div>
+<button class="btn pri hl" data-fc>Open camera attendance</button></div>
+</div></div></section>
+
+<section class="sec" id="features"><div class="w"><h2 class="rv">Everything a worker needs, made personal</h2><p class="sub rv">Simple words. Big buttons. It remembers your trade, your wage and your language.</p>
+<div class="fg">
+<div class="ft rv"><i data-i="clock"></i><h3>Attendance</h3><p>One tap, SMS, call or face camera to check in.</p><ul><li>Your phone number is linked to your ID</li><li>Late or missed days flagged for you</li><li>Works with no internet</li></ul></div>
+<div class="ft rv" style="--d:.08s"><i data-i="wallet"></i><h3>Payslip explained</h3><p>See exactly how your pay is worked out.</p><ul><li>Overtime at 1.5× shown separately</li><li>Every deduction named in simple words</li><li>Spoken aloud if you cannot read</li></ul></div>
+<div class="ft rv" style="--d:.16s"><i data-i="shield"></i><h3>Report an issue</h3><p>Wages, safety, hours or harassment.</p><ul><li>Speak it or type it, in any language</li><li>Keep your name private</li><li>Or just text REPORT and what happened</li></ul></div>
+<div class="ft rv"><i data-i="search"></i><h3>Complaint tracking</h3><p>A reference number for every report.</p><ul><li>Received, Assigned, Fixed steps</li><li>Message when something changes</li><li>Reply STATUS to any SMS</li></ul></div>
+<div class="ft rv" style="--d:.08s"><i data-i="scale"></i><h3>Wage checker</h3><p>Are you being paid fairly?</p><ul><li>Compares your daily wage with the minimum</li><li>Shows what you may be owed</li><li>Tells you who to contact</li></ul></div>
+<div class="ft rv" style="--d:.16s"><i data-i="book"></i><h3>Know your rights</h3><p>Short voice lessons, 1 minute each.</p><ul><li>Working hours, leave, safety gear</li><li>Insurance and PF basics</li><li>Pick the language you like best</li></ul></div>
+<div class="ft rv"><i data-i="alert"></i><h3>SOS button</h3><p>Danger at site? Get help fast.</p><ul><li>Send SOS by SMS or press 9 on a call</li><li>Alerts your supervisor and a helpline</li><li>Shares your site name</li></ul></div>
+<div class="ft rv" style="--d:.08s"><i data-i="bell"></i><h3>Smart reminders</h3><p>Learns your routine.</p><ul><li>Pay day and overtime alerts</li><li>Heat and rain safety tips</li><li>Quiet hours you choose</li></ul></div>
+<div class="ft rv" style="--d:.16s"><i data-i="lock"></i><h3>Private by design</h3><p>Your data is yours.</p><ul><li>Employer sees reports, not your name</li><li>Full record of who viewed what</li><li>Delete your data anytime</li></ul></div>
+</div></div></section>
+
+<section class="sec" id="demo"><div class="w dg"><div class="rv l"><span class="tag pulse" style="margin-bottom:.8rem">Core feature · SMS & call attendance</span><h2>Text or call to mark attendance. <span style="color:var(--g)">Your number is your ID.</span></h2><p class="sub">Link your mobile number to your user ID once. In this interactive demo, simulated texts and calls use the number you enter to find its linked user ID. Live SMS/call attendance requires a backend and a messaging/telephony provider.</p>
+<label for="sp">Your mobile number (the SMS or call comes from)</label>
+<input id="sp" type="tel" inputmode="numeric" maxlength="16" placeholder="10-digit number" autocomplete="off">
+<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem"><button class="btn" id="spd" style="min-height:38px;padding:.2rem .8rem">Use demo number 9876543210</button></div>
+<p class="hint" id="lk" role="status"></p><p class="hint" style="margin:.5rem 0">Prototype note: this phone simulator is not connected to a carrier. Real incoming SMS/calls require a backend webhook and a messaging/telephony provider; verify the provider-supplied sender number before recording attendance.</p>
+<div class="pipe" id="pipe" aria-live="polite"><div class="pnode"><span data-i="phone"></span><small>Your number</small><b id="pp1">Not set</b></div><i class="pl"></i><div class="pnode"><span data-i="shield"></span><small>Linked ID</small><b id="pp2">None</b></div><i class="pl"></i><div class="pnode"><span data-i="clock"></span><small>Today</small><b id="pp3">-</b></div></div>
+<div class="tabs" role="group"><button id="tS" aria-pressed="true">SMS</button><button id="tC" aria-pressed="false">Phone call</button></div>
+<ul class="pts"><li><span>1</span><div><b>SMS keywords.</b> CHECKIN, CHECKOUT, PAY, REPORT (then what happened), STATUS, HELP or SOS. They act on your linked ID.</div></li><li><span>2</span><div><b>Call menu.</b> Press 1 check in, 2 pay, 3 report, 4 status, 5 check out, 9 SOS. It speaks aloud.</div></li><li><span>3</span><div><b>Free to use.</b> Works on any basic phone, even with no balance or internet.</div></li></ul></div>
+<div class="rv r"><div class="nk" id="nk"><div class="spk"></div><div class="br">WORKRIGHT</div><div class="scr">
+<div class="lcdp" id="ps"><div class="ph"><span>Messages 56767</span><span class="sig"><i></i><i></i><i></i><i></i></span></div><div class="th" id="th"></div><div class="qk" id="qk"></div><div class="sr"><input id="si" placeholder="Type CHECKIN" aria-label="SMS text"><button class="btn pri" id="ss">Send</button></div></div>
+<div class="lcdp" id="pc" hidden><div class="ph"><span>Voice line</span><span><span class="sig"><i></i><i></i><i></i><i></i></span> <span id="ct">00:00</span></span></div><div class="cv" id="cv"><div class="av" id="cav" data-i="phone"></div><b>1800 100 200</b><div class="eq"><i></i><i></i><i></i><i></i><i></i></div><small id="cst">Press Call</small></div><div class="tr" id="tr"></div><button class="callb" id="cb">Call</button></div></div>
+<div class="sks"><span>MENU</span><span>BACK</span></div>
+<div class="ctl"><button class="cg" id="kg" aria-label="Call">CALL</button><div class="nav2" aria-hidden="true">OK</div><button class="cr" id="kr" aria-label="End call">END</button></div>
+<div class="keys" id="ky"></div></div></div></div></section>
+
+<section class="sec" id="you"><div class="w"><h2 class="rv">Made just for you</h2><p class="sub rv">Sample figures only. In the real app, pay details are set by your employer’s admin.</p>
+<div class="pg"><div class="box rv l"><label for="pn">Your name</label><input id="pn" value="Ravi"><label for="pt">Your work</label><select id="pt"><option>Mason</option><option>Helper</option><option>Scaffolder</option><option>Waste collector</option><option>Electrician</option></select>
+<label for="pw">Daily wage (₹)</label><input id="pw" disabled type="number" value="700" min="0"><label for="po">Overtime hours this week</label><input id="po" disabled type="number" value="2.5" step=".5" min="0"><label for="pm">Minimum wage in your area (₹/day)</label><input id="pm" disabled type="number" value="650" min="0">
+<button class="sos" id="sos" style="margin-top:1.1rem">Test SOS alert</button></div>
+<div class="box slip rv r"><h3 style="margin-top:0" id="sh"></h3><div><span>Days worked (6)</span><b id="s1"></b></div><div><span>Overtime (1.5×)</span><b id="s2"></b></div><div><span>PF and insurance (12%)</span><b id="s3"></b></div><div class="t"><span>Take home</span><b id="s4"></b></div><p id="sv"></p></div></div></div></section>
+
+<section class="sec" style="padding-top:0"><div class="w"><div class="cta rv z"><h2>Fair work is easier when it is on record.</h2><button class="btn" data-o="up">Create your account</button></div></div></section>
+<footer>WorkRight · Interactive prototype for decent work (SDG 8). Demo records are stored locally in this browser; real SMS, calls and shared attendance require a secure backend.</footer>
+<div id="appv"><div id="av"></div></div>
+<dialog id="au"><button class="btn" data-c style="float:right;min-height:38px;padding:.2rem .7rem" aria-label="Close">Close</button><h2 id="at" style="font-size:1.5rem;margin:0 0 .8rem"></h2>
+<div class="tabs" id="mt"><button data-m="in">Sign in</button><button data-m="up">Sign up</button></div><br>
+<div class="tabs" id="rt" style="margin-top:.5rem"><button data-r="worker">Employee</button><button data-r="admin">Admin</button></div>
+<div id="nw"><label for="aun">Full name</label><input id="aun" autocomplete="name"></div>
+<div id="iw"><label for="aii">Industry</label><select id="aii"><option value="construction">Construction</option><option value="waste">Waste management</option></select></div>
+<div id="mw"><label for="aum">Mobile number (links SMS and calls to your ID)</label><input id="aum" type="tel" inputmode="numeric" placeholder="10-digit number" autocomplete="tel"></div>
+<label for="aui">User ID</label><input id="aui" placeholder="e.g. W1" autocapitalize="characters">
+<label for="apw">Password</label><input id="apw" type="password">
+<div id="cw"><label for="auc">Admin access code</label><input id="auc"></div>
+<p id="ae" style="color:#f2605f;font-weight:600;min-height:1.2rem;margin:.5rem 0" role="alert"></p>
+<button class="btn pri" id="as" style="width:100%">Continue</button><p class="hint" id="ah" style="margin-bottom:0"></p></dialog>
+
+<dialog id="fc" aria-label="Face attendance"><button class="btn" id="fx" style="float:right;min-height:38px;padding:.2rem .7rem" aria-label="Close">Close</button><h2 style="font-size:1.5rem;margin:0 0 .3rem">Face attendance</h2>
+<p class="hint" style="margin:.3rem 0 .6rem">Type the user ID, look at the camera and tap a button. The photo stays on this device. Matching is demo-level, so an admin should still review records.</p>
+<label for="fid">User ID</label><input id="fid" placeholder="e.g. W1" autocapitalize="characters" autocomplete="off">
+<div id="pww"><label for="fpw">Password (only needed to save a face)</label><input id="fpw" type="password" autocomplete="off"></div>
+<div class="fw" id="fw"><video id="fv" playsinline muted autoplay></video><img id="fsnap" alt="Captured photo" hidden><span class="ph0">Camera is off</span><div class="flash" id="fflash"></div></div>
+<p id="fst" role="status"></p>
+<div class="fb"><button class="btn pri wide" id="fmk">Take photo and mark present</button><button class="btn" id="freg">Take photo and save my face</button><button class="btn" id="fvw">Take photo and view attendance</button><button class="btn" id="fon">Start camera</button><button class="btn" id="fph">Use phone camera app</button></div>
+<input type="file" id="ffile" accept="image/*" capture="user" hidden>
+<div id="fres" style="margin-top:.9rem"></div></dialog>
+
+<button id="cfb" class="hl" aria-label="Face attendance camera"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Face attendance</span><em class="bdg">NEW</em></button>
+<button id="cbf" class="hl" aria-label="Open AI Agent"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span>AI Agent</span><em class="bdg">AI</em></button>
+<section id="cbp" hidden role="dialog" aria-label="WorkRight AI Agent"><div class="ch"><div><b>WorkRight AI Agent</b><small>Answers from your own app data and can mark you present. Nothing leaves your device.</small></div><button id="cbx" aria-label="Close assistant">Close</button></div><div id="cbm" class="cm"></div><div id="cbq" class="cq"></div><div class="cs"><input id="cbi" placeholder="Ask, or say: mark me present" aria-label="Message"><button class="btn pri" id="cbs">Send</button></div></section>
+<div id="toast" role="status"></div>
+<script>
+"use strict";
+const LG={en:["English","en-IN"],hi:["हिन्दी","hi-IN"],ta:["தமிழ்","ta-IN"],te:["తెలుగు","te-IN"],bn:["বাংলা","bn-IN"],mr:["मराठी","mr-IN"],kn:["ಕನ್ನಡ","kn-IN"],ml:["മലയാളം","ml-IN"],gu:["ગુજરાતી","gu-IN"],pa:["ਪੰਜਾਬੀ","pa-IN"],or:["ଓଡ଼ିଆ","or-IN"]};
+/* ci=check-in, pay={h}hours {p}rupees, rp=report, hp=help, sos, ivr=menu, ph=headline, ld=lead, ok=checked in label */
+const T={
+en:{h:"Every shift counted. <em>Every voice heard.</em>",ld:"Attendance, pay and safety reports for workers. Use the app, SMS or a phone call.",ci:"Checked in at 08:02. Have a safe shift, {n}.",pay:"{n}, this week: {p} rupees take home. Overtime {o} hours paid extra.",rp:"Report received. Reference SS-4821. Your name is kept private.",hp:"Reply CHECKIN, CHECKOUT, PAY, REPORT, STATUS or SOS.",sos:"SOS sent to your supervisor and helpline. Stay safe.",st:"SS-4821: Assigned to Safety Officer.",ivr:"Welcome to WorkRight. Press 1 for attendance, 2 for pay, 3 to report a problem, 9 for help."},
+hi:{h:"हर शिफ़्ट की गिनती। <em>हर आवाज़ की सुनवाई।</em>",ld:"मज़दूरों के लिए हाज़िरी, वेतन और सुरक्षा रिपोर्ट। ऐप, एसएमएस या फ़ोन कॉल से।",ci:"{n}, सुबह 08:02 पर हाज़िरी लग गई। सुरक्षित रहें।",pay:"{n}, इस हफ़्ते हाथ में {p} रुपये। {o} घंटे ओवरटाइम जुड़ा।",rp:"शिकायत मिल गई। नंबर SS-4821। आपका नाम गुप्त रहेगा।",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS या SOS लिखें।",sos:"SOS आपके सुपरवाइज़र और हेल्पलाइन को भेजा गया। सुरक्षित रहें।",st:"SS-4821: सेफ़्टी अफ़सर को सौंपा गया।",ivr:"WorkRight में स्वागत है। हाज़िरी के लिए 1, वेतन के लिए 2, शिकायत के लिए 3, मदद के लिए 9 दबाएँ।"},
+ta:{h:"ஒவ்வொரு ஷிஃப்டும் கணக்கில். <em>ஒவ்வொரு குரலும் கேட்கப்படும்.</em>",ld:"தொழிலாளர்களுக்கான வருகை, சம்பளம், பாதுகாப்பு புகார்கள். செயலி, SMS அல்லது அழைப்பு மூலம்.",ci:"{n}, காலை 08:02 மணிக்கு வருகை பதிவானது. பாதுகாப்பாக இருங்கள்.",pay:"{n}, இந்த வாரம் கைக்கு {p} ரூபாய். {o} மணி கூடுதல் நேரம் சேர்க்கப்பட்டது.",rp:"புகார் பெறப்பட்டது. எண் SS-4821. உங்கள் பெயர் ரகசியமாக இருக்கும்.",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS அல்லது SOS என அனுப்பவும்.",sos:"SOS உங்கள் மேற்பார்வையாளருக்கும் உதவி எண்ணுக்கும் அனுப்பப்பட்டது.",st:"SS-4821: பாதுகாப்பு அதிகாரிக்கு ஒதுக்கப்பட்டது.",ivr:"WorkRight-க்கு வரவேற்கிறோம். வருகைக்கு 1, சம்பளத்துக்கு 2, புகாருக்கு 3, உதவிக்கு 9 அழுத்தவும்."},
+te:{h:"ప్రతి షిఫ్ట్ లెక్కలో. <em>ప్రతి గొంతుకు విలువ.</em>",ld:"కార్మికుల కోసం హాజరు, జీతం, భద్రత ఫిర్యాదులు. యాప్, SMS లేదా ఫోన్ కాల్ ద్వారా.",ci:"{n}, ఉదయం 08:02కి హాజరు నమోదైంది. జాగ్రత్తగా ఉండండి.",pay:"{n}, ఈ వారం చేతికి {p} రూపాయలు. {o} గంటల ఓవర్‌టైమ్ కలిపాం.",rp:"ఫిర్యాదు అందింది. నంబర్ SS-4821. మీ పేరు గోప్యంగా ఉంటుంది.",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS లేదా SOS పంపండి.",sos:"SOS మీ సూపర్‌వైజర్‌కు, హెల్ప్‌లైన్‌కు పంపాం.",st:"SS-4821: భద్రతా అధికారికి అప్పగించాం.",ivr:"WorkRight కి స్వాగతం. హాజరుకు 1, జీతానికి 2, ఫిర్యాదుకు 3, సహాయానికి 9 నొక్కండి."},
+bn:{h:"প্রতিটি শিফট গণনায়। <em>প্রতিটি কণ্ঠ শোনা হবে।</em>",ld:"শ্রমিকদের জন্য হাজিরা, মজুরি ও নিরাপত্তা রিপোর্ট। অ্যাপ, এসএমএস বা ফোন কলে।",ci:"{n}, সকাল 08:02-এ হাজিরা হয়েছে। নিরাপদে থাকুন।",pay:"{n}, এই সপ্তাহে হাতে {p} টাকা। {o} ঘণ্টা ওভারটাইম যোগ হয়েছে।",rp:"অভিযোগ পেয়েছি। নম্বর SS-4821। আপনার নাম গোপন থাকবে।",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS বা SOS লিখুন।",sos:"SOS আপনার সুপারভাইজার ও হেল্পলাইনে পাঠানো হয়েছে।",st:"SS-4821: নিরাপত্তা কর্মকর্তাকে দেওয়া হয়েছে।",ivr:"WorkRight-এ স্বাগতম। হাজিরার জন্য 1, মজুরির জন্য 2, অভিযোগের জন্য 3, সাহায্যের জন্য 9 চাপুন।"},
+mr:{h:"प्रत्येक शिफ्टची नोंद. <em>प्रत्येक आवाज ऐकला जाईल.</em>",ld:"कामगारांसाठी हजेरी, पगार आणि सुरक्षा तक्रारी. अॅप, एसएमएस किंवा फोन कॉलने.",ci:"{n}, सकाळी 08:02 ला हजेरी लागली. सुरक्षित राहा.",pay:"{n}, या आठवड्यात हातात {p} रुपये. {o} तास ओव्हरटाइम जोडला.",rp:"तक्रार मिळाली. क्रमांक SS-4821. तुमचे नाव गुप्त राहील.",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS किंवा SOS पाठवा.",sos:"SOS तुमच्या पर्यवेक्षकाला आणि हेल्पलाइनला पाठवले.",st:"SS-4821: सुरक्षा अधिकाऱ्याकडे सोपवले.",ivr:"WorkRight मध्ये स्वागत. हजेरीसाठी 1, पगारासाठी 2, तक्रारीसाठी 3, मदतीसाठी 9 दाबा."},
+kn:{h:"ಪ್ರತಿ ಶಿಫ್ಟ್ ಲೆಕ್ಕದಲ್ಲಿ. <em>ಪ್ರತಿ ಧ್ವನಿಗೂ ಬೆಲೆ.</em>",ld:"ಕಾರ್ಮಿಕರಿಗೆ ಹಾಜರಾತಿ, ಸಂಬಳ, ಸುರಕ್ಷತಾ ದೂರುಗಳು. ಆ್ಯಪ್, SMS ಅಥವಾ ಕರೆ ಮೂಲಕ.",ci:"{n}, ಬೆಳಿಗ್ಗೆ 08:02ಕ್ಕೆ ಹಾಜರಾತಿ ದಾಖಲಾಗಿದೆ. ಸುರಕ್ಷಿತವಾಗಿರಿ.",pay:"{n}, ಈ ವಾರ ಕೈಗೆ {p} ರೂಪಾಯಿ. {o} ಗಂಟೆ ಓವರ್‌ಟೈಮ್ ಸೇರಿದೆ.",rp:"ದೂರು ಬಂದಿದೆ. ಸಂಖ್ಯೆ SS-4821. ನಿಮ್ಮ ಹೆಸರು ಗೌಪ್ಯ.",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS ಅಥವಾ SOS ಕಳುಹಿಸಿ.",sos:"SOS ನಿಮ್ಮ ಮೇಲ್ವಿಚಾರಕರಿಗೆ ಮತ್ತು ಸಹಾಯವಾಣಿಗೆ ಕಳುಹಿಸಲಾಗಿದೆ.",st:"SS-4821: ಸುರಕ್ಷತಾ ಅಧಿಕಾರಿಗೆ ವಹಿಸಲಾಗಿದೆ.",ivr:"WorkRight ಗೆ ಸ್ವಾಗತ. ಹಾಜರಾತಿಗೆ 1, ಸಂಬಳಕ್ಕೆ 2, ದೂರಿಗೆ 3, ಸಹಾಯಕ್ಕೆ 9 ಒತ್ತಿ."},
+ml:{h:"ഓരോ ഷിഫ്റ്റും കണക്കിൽ. <em>ഓരോ ശബ്ദവും കേൾക്കും.</em>",ld:"തൊഴിലാളികൾക്കായി ഹാജർ, ശമ്പളം, സുരക്ഷാ പരാതികൾ. ആപ്പ്, SMS അല്ലെങ്കിൽ ഫോൺ കോൾ വഴി.",ci:"{n}, രാവിലെ 08:02-ന് ഹാജർ രേഖപ്പെടുത്തി. സുരക്ഷിതരായിരിക്കൂ.",pay:"{n}, ഈ ആഴ്ച കയ്യിൽ {p} രൂപ. {o} മണിക്കൂർ ഓവർടൈം ചേർത്തു.",rp:"പരാതി ലഭിച്ചു. നമ്പർ SS-4821. നിങ്ങളുടെ പേര് രഹസ്യമായിരിക്കും.",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS അല്ലെങ്കിൽ SOS അയയ്ക്കൂ.",sos:"SOS നിങ്ങളുടെ സൂപ്പർവൈസർക്കും ഹെൽപ്പ്‌ലൈനിനും അയച്ചു.",st:"SS-4821: സേഫ്റ്റി ഓഫീസർക്ക് കൈമാറി.",ivr:"WorkRight ലേക്ക് സ്വാഗതം. ഹാജറിന് 1, ശമ്പളത്തിന് 2, പരാതിക്ക് 3, സഹായത്തിന് 9 അമർത്തുക."},
+gu:{h:"દરેક શિફ્ટની નોંધ. <em>દરેક અવાજ સંભળાય.</em>",ld:"કામદારો માટે હાજરી, પગાર અને સુરક્ષા ફરિયાદો. એપ, SMS અથવા ફોન કૉલથી.",ci:"{n}, સવારે 08:02 વાગ્યે હાજરી નોંધાઈ. સુરક્ષિત રહો.",pay:"{n}, આ અઠવાડિયે હાથમાં {p} રૂપિયા. {o} કલાક ઓવરટાઇમ ઉમેર્યો.",rp:"ફરિયાદ મળી. નંબર SS-4821. તમારું નામ ગુપ્ત રહેશે.",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS અથવા SOS મોકલો.",sos:"SOS તમારા સુપરવાઇઝર અને હેલ્પલાઇનને મોકલ્યું.",st:"SS-4821: સલામતી અધિકારીને સોંપ્યું.",ivr:"WorkRight માં સ્વાગત છે. હાજરી માટે 1, પગાર માટે 2, ફરિયાદ માટે 3, મદદ માટે 9 દબાવો."},
+pa:{h:"ਹਰ ਸ਼ਿਫ਼ਟ ਦੀ ਗਿਣਤੀ। <em>ਹਰ ਆਵਾਜ਼ ਸੁਣੀ ਜਾਵੇਗੀ।</em>",ld:"ਮਜ਼ਦੂਰਾਂ ਲਈ ਹਾਜ਼ਰੀ, ਤਨਖ਼ਾਹ ਅਤੇ ਸੁਰੱਖਿਆ ਸ਼ਿਕਾਇਤਾਂ। ਐਪ, SMS ਜਾਂ ਫ਼ੋਨ ਕਾਲ ਰਾਹੀਂ।",ci:"{n}, ਸਵੇਰੇ 08:02 ਵਜੇ ਹਾਜ਼ਰੀ ਲੱਗ ਗਈ। ਸੁਰੱਖਿਅਤ ਰਹੋ।",pay:"{n}, ਇਸ ਹਫ਼ਤੇ ਹੱਥ ਵਿੱਚ {p} ਰੁਪਏ। {o} ਘੰਟੇ ਓਵਰਟਾਈਮ ਜੁੜਿਆ।",rp:"ਸ਼ਿਕਾਇਤ ਮਿਲ ਗਈ। ਨੰਬਰ SS-4821। ਤੁਹਾਡਾ ਨਾਂ ਗੁਪਤ ਰਹੇਗਾ।",hp:"CHECKIN, CHECKOUT, PAY, REPORT, STATUS ਜਾਂ SOS ਭੇਜੋ।",sos:"SOS ਤੁਹਾਡੇ ਸੁਪਰਵਾਈਜ਼ਰ ਅਤੇ ਹੈਲਪਲਾਈਨ ਨੂੰ ਭੇਜਿਆ ਗਿਆ।",st:"SS-4821: ਸੁਰੱਖਿਆ ਅਫ਼ਸਰ ਨੂੰ ਸੌਂਪਿਆ ਗਿਆ।",ivr:"WorkRight ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ। ਹਾਜ਼ਰੀ ਲਈ 1, ਤਨਖ਼ਾਹ ਲਈ 2, ਸ਼ਿਕਾਇਤ ਲਈ 3, ਮਦਦ ਲਈ 9 ਦਬਾਓ।"}
+};
+T.or=Object.assign({},T.en,{h:"ପ୍ରତ୍ୟେକ ଶିଫ୍ଟର ହିସାବ। <em>ପ୍ରତ୍ୟେକ ସ୍ୱର ଶୁଣାଯିବ।</em>",ld:"ଶ୍ରମିକଙ୍କ ପାଇଁ ହାଜିରା, ଦରମା ଓ ସୁରକ୍ଷା ଅଭିଯୋଗ। ଆପ୍, SMS କିମ୍ବା ଫୋନ୍ କଲ୍ ଦ୍ୱାରା।",rp:"ଅଭିଯୋଗ ମିଳିଲା। ନମ୍ବର SS-4821। ଆପଣଙ୍କ ନାମ ଗୋପନ ରହିବ।"});
+const $=id=>document.getElementById(id);let lang="en",P={n:"Ravi"};
+const tx=k=>(T[lang][k]||T.en[k]);
+function calc(){const w=+$("pw").value||0,o=+$("po").value||0,base=w*6,ot=Math.round(w/8*1.5*o),pf=Math.round(base*.12);return{base,ot,pf,take:base+ot-pf}}
+const R=n=>"₹"+n.toLocaleString("en-IN");
+function renderSlip(){const c=calc(),m=+$("pm").value||0,w=+$("pw").value||0;$("sh").textContent=($("pn").value||"You")+" · "+$("pt").value;$("s1").textContent=R(c.base);$("s2").textContent="+ "+R(c.ot);$("s3").textContent="− "+R(c.pf);$("s4").textContent=R(c.take);
+ $("sv").innerHTML=w>=m?'<span class="tag">Above minimum wage</span>':'<span class="tag b">Below minimum by '+R(m-w)+' a day. You may be owed '+R((m-w)*26)+' a month.</span>';
+ $("hw").textContent=($("pn").value||"")+", 6.5 of 8 hours today"}
+/* language */
+const ls=$("lsel"),ch=$("chips");
+Object.entries(LG).forEach(([k,v])=>{ls.add(new Option(v[0],k));const b=document.createElement("button");b.textContent=v[0];b.dataset.k=k;b.setAttribute("aria-pressed",k==="en");b.onclick=()=>setL(k);ch.appendChild(b)});
+function setL(k){lang=k;ls.value=k;document.documentElement.lang=k;ch.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===k));$("h1").innerHTML=tx("h");$("lead").textContent=tx("ld");resetS();resetC();try{localStorage.setItem("ss_l",k)}catch(e){}}
+ls.onchange=()=>setL(ls.value);
+/* ===== phone number to user ID (v4) ===== */
+const ph10=s=>{const d=String(s||"").replace(/\D/g,"");return d.length>=10?d.slice(-10):""};
+const who=()=>{const n=ph10($("sp").value);if(!n||!D)return null;return Object.keys(D.u).find(k=>D.u[k].m===n)||null};
+const NOTL="This number is not linked to a WorkRight ID. Sign in, open Attendance, My phone, and link it. Demo: 9876543210 is linked to W1.";
+const firstN=u=>u.n.split(" ")[0];
+const cat=t=>/pay|wage|salary|money/i.test(t)?"Wages":/hour|overtime|shift/i.test(t)?"Working hours":/harass|abuse|threat/i.test(t)?"Harassment":"Safety";
+function refreshApp(id){if(me===id&&document.body.classList.contains("in"))app()}
+function aCI(id,ch){const u=D.u[id],r=hist(id),n=new Date(),td=r.find(x=>x.k===dk(n));
+ if(td&&td.i)return "Already checked in at "+td.i+" today. "+u.n+" ("+id+").";
+ const late=n.getHours()>=9;r.push({k:dk(n),i:t24(n),o:"",st:late?"late":"ontime",n:ch==="SMS"||ch==="Call"?"Marked by "+ch+" from linked number":"Marked by "+ch,ch});
+ log(id,"Checked in by "+ch);sv();refreshApp(id);
+ return tx("ci").replace("08:02",t24(n)).replace("{n}",firstN(u))+" ["+id+(late?", late":"")+"]"}
+function aCO(id,ch){const r=hist(id),n=new Date(),td=r.find(x=>x.k===dk(n));
+ if(!td||!td.i)return "You have not checked in today. Check in first.";
+ if(td.o)return "Already checked out at "+td.o+".";
+ td.o=t24(n);log(id,"Checked out by "+ch);sv();refreshApp(id);
+ return "Checked out at "+td.o+". Worked "+Math.max(0,(mm(td.o)-mm(td.i)-60)/60).toFixed(1)+" h. See you tomorrow."}
+function aPay(id){const u=D.u[id];if(!u.w)return "Your wage has not been set yet. Ask your admin to set it.";
+ const b=u.w*6,ot=Math.round(u.w/8*1.5*(u.ot||0)),pf=Math.round(b*.12);
+ return tx("pay").replace("{n}",firstN(u)).replace("{p}",b+ot-pf).replace("{o}",u.ot||0)}
+function aRep(id,text,ch){text=(text||"").trim();if(text.length<10)return "Send REPORT, then what happened. Example: REPORT scaffold plank is cracked at Block B.";
+ const u=D.u[id],cid="WR-"+(1001+D.c.length);D.c.push({id:cid,u:id,i:u.i,k:cat(text),t:text.slice(0,300),an:1,s:0,o:"",d:new Date().toLocaleDateString()});
+ log(id,"Report "+cid+" filed by "+ch);sv();refreshApp(id);return tx("rp").replace("SS-4821",cid)}
+function aSt(id){const c=D.c.filter(x=>x.u===id);if(!c.length)return "You have no reports yet. Send REPORT and what happened.";
+ const x=c[c.length-1];return x.id+": "+SN[x.s]+(x.o?", owner "+x.o:", waiting for an owner")+"."}
+function aSos(id,ch){log(id,"SOS sent by "+ch);sv();return tx("sos")+" ["+id+"]"}
+function smsReply(w){const p=w.trim().split(/\s+/),k=p[0].toUpperCase(),rest=p.slice(1).join(" "),n=ph10($("sp").value),id=who();
+ if(k==="SOS")return id?aSos(id,"SMS"):tx("sos");
+ if(!["CHECKIN","CHECKOUT","OUT","PAY","REPORT","STATUS"].includes(k))return tx("hp");
+ if(!n)return "Type your mobile number in the box above the phone first, then send "+k+".";
+ if(!id)return NOTL;
+ if(k==="CHECKIN")return aCI(id,"SMS");
+ if(k==="CHECKOUT"||k==="OUT")return aCO(id,"SMS");
+ if(k==="PAY")return aPay(id);
+ if(k==="REPORT")return aRep(id,rest,"SMS");
+ return aSt(id)}
+function ivrReply(k){const n=ph10($("sp").value),id=who();k=String(k);
+ if(k==="9")return id?aSos(id,"Call"):tx("sos");
+ if(!["1","2","3","4","5"].includes(k))return tx("ivr");
+ if(!n)return "Please type your mobile number in the box on the page first.";
+ if(!id)return NOTL;
+ return {1:()=>aCI(id,"Call"),2:()=>aPay(id),3:()=>aRep(id,"Problem reported by phone call from "+n,"Call"),4:()=>aSt(id),5:()=>aCO(id,"Call")}[k]()}
+function linkUI(flash){const n=ph10($("sp").value),id=who(),u=id&&D.u[id];
+ $("pp1").textContent=n?n.replace(/(\d{5})(\d{5})/,"$1 $2"):"Not set";
+ $("pp2").textContent=u?id+" · "+firstN(u):(n?"Not linked":"None");
+ let t="-";if(u){const r=hist(id).find(x=>x.k===dk(new Date()));t=r&&r.i?"Present "+r.i:"Not in yet"}
+ $("pp3").textContent=t;
+ $("lk").innerHTML=u?"<b>Linked.</b> Texts and calls from this number act on ID <b>"+esc(id)+"</b> ("+esc(u.n)+").":n?"This number is not linked to any ID yet. Sign in and add it under <b>Attendance, My phone</b>, or sign up with it.":"Type the number your SMS comes from. Demo: <b>9876543210</b> is linked to ID <b>W1</b>.";
+ $("pipe").classList.toggle("ok",!!u);
+ if(flash){const e=$("pp3");e.classList.remove("pop");void e.offsetWidth;e.classList.add("pop")}}
+/* SMS */
+const th=$("th");const now=()=>new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+function bub(t,c){const d=document.createElement("div");d.className="bub "+c;d.innerHTML=t+"<small>"+now()+"</small>";th.appendChild(d);th.scrollTop=1e5;
+ if(c==="in"){const k=$("nk");k.classList.remove("buzz");void k.offsetWidth;k.classList.add("buzz")}return d}
+function resetS(){th.innerHTML="";bub(tx("hp"),"in");$("qk").innerHTML="";["CHECKIN","CHECKOUT","PAY","REPORT","STATUS","SOS","HELP"].forEach(w=>{const b=document.createElement("button");b.textContent=w;b.onclick=()=>sms(w==="REPORT"?"REPORT Safety problem at my site, please check":w);$("qk").appendChild(b)})}
+function sms(w){w=(w||$("si").value).trim();if(!w)return;$("si").value="";bub(esc(w),"out");const d=document.createElement("div");d.className="bub in";d.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';th.appendChild(d);th.scrollTop=1e5;
+ setTimeout(()=>{d.remove();bub(esc(smsReply(w)),"in");linkUI(1)},900)}
+$("ss").onclick=()=>sms();$("si").onkeydown=e=>{if(e.key==="Enter")sms()};
+{const PL=["Type CHECKIN","Type CHECKOUT","Type PAY","Type REPORT ...","Type STATUS"];let pi=0;setInterval(()=>{if(document.activeElement!==$("si")){pi=(pi+1)%PL.length;$("si").placeholder=PL[pi]}},2500)}
+$("sp").oninput=()=>{try{localStorage.setItem("ss_ph",ph10($("sp").value))}catch(e){}linkUI()};
+$("spd").onclick=()=>{$("sp").value="9876543210";$("sp").oninput()};
+/* Call */
+let on=false,tm,sec=0;const tr=$("tr");
+function line(t,y){const p=document.createElement("p");p.textContent=t;if(y)p.className="y";tr.appendChild(p);tr.scrollTop=1e5}
+function say(t){line("Voice: "+t);try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=LG[lang][1];speechSynthesis.speak(u)}catch(e){}}
+function resetC(){hang(true);tr.innerHTML="";$("cst").textContent="Tap to call"}
+function hang(q){on=false;clearInterval(tm);try{speechSynthesis.cancel()}catch(e){}$("cb").textContent="Call";$("cb").className="callb";$("cav").className="av";$("cv").classList.remove("talk");$("ct").textContent="00:00";if(!q)$("cst").textContent="Call ended"}
+$("cb").onclick=()=>{if(on)return hang();on=true;tr.innerHTML="";$("cb").textContent="End call";$("cb").className="callb end";$("cav").className="av ring";$("cst").textContent="Ringing…";
+ setTimeout(()=>{if(!on)return;$("cav").className="av";$("cv").classList.add("talk");$("cst").textContent="Connected";sec=0;tm=setInterval(()=>{sec++;$("ct").textContent="00:"+String(sec).padStart(2,"0")},1e3);
+  const n=ph10($("sp").value),id=who();line("Caller ID: "+(n||"unknown")+(id?" → ID "+id:" (not linked)"));say(tx("ivr"))},1600)};
+const KL={1:"",2:"ABC",3:"DEF",4:"GHI",5:"JKL",6:"MNO",7:"PQRS",8:"TUV",9:"WXYZ","*":"",0:"+","#":""},KW={1:"CHECKIN",2:"PAY",3:"REPORT Safety problem at my site, please check",4:"STATUS",5:"CHECKOUT",9:"SOS"};
+[1,2,3,4,5,6,7,8,9,"*",0,"#"].forEach(k=>{const b=document.createElement("button");b.innerHTML=k+"<small>"+KL[k]+"</small>";b.onclick=()=>{if($("pc").hidden){if(KW[k])sms(KW[k]);else toast("Press 1 to 5, or 9");return}if(!on)return toast("Press Call first");line("You pressed "+k,1);setTimeout(()=>{say(ivrReply(k));linkUI(1)},500)};$("ky").appendChild(b)});
+$("kg").onclick=()=>{if(!on){tab(0);$("cb").click()}};$("kr").onclick=()=>hang();
+$("tS").onclick=()=>tab(1);$("tC").onclick=()=>tab(0);
+function tab(s){$("ps").hidden=!s;$("pc").hidden=!!s;$("tS").setAttribute("aria-pressed",!!s);$("tC").setAttribute("aria-pressed",!s);if(s)hang(true)}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2600)}
+$("sos").onclick=()=>{toast(tx("sos"));document.getElementById("demo").scrollIntoView();tab(1);sms("SOS")};
+["pn","pt","pw","po","pm"].forEach(i=>$(i).oninput=renderSlip);
+/* scroll: auto variants and stagger */
+document.querySelectorAll(".fg>.ft").forEach((e,i)=>{e.classList.add(["z","fl","bl"][i%3]);e.style.setProperty("--d",(i%3)*.12+"s")});
+document.querySelectorAll(".sec h2.rv").forEach(e=>e.classList.add("bl"));
+document.querySelectorAll(".pts li,.slip>div,.tabs,.pnode,footer").forEach((e,i)=>{e.classList.add("rv");if(e.matches(".pts li"))e.classList.add("l");else if(e.matches(".slip>div"))e.classList.add("r");else e.classList.add("z");e.style.setProperty("--d",(i%4)*.1+"s")});
+document.querySelectorAll(".hero .hg>.rv:first-child>*").forEach((e,i)=>e.style.setProperty("--k",i));
+/* scroll */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("show");const n=e.target.querySelector("[data-n]");if(n&&!n._d){n._d=1;const to=+n.dataset.n,t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/1200);n.textContent=n.dataset.t&&p>=1?n.dataset.t:Math.round(to*p);if(p<1)requestAnimationFrame(f)})(t0)}io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll(".rv").forEach(e=>io.observe(e));
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)document.querySelectorAll("nav a").forEach(a=>a.classList.toggle("act",a.getAttribute("href")==="#"+e.target.id))}),{rootMargin:"-45% 0px -50% 0px"});
+["demo","helpers","features","you"].forEach(i=>spy.observe($(i)));
+addEventListener("scroll",()=>{const s=scrollY,h=document.documentElement.scrollHeight-innerHeight;$("prog").style.width=(s/h*100)+"%";$("nv").classList.toggle("sc",s>30);document.querySelector(".hero").style.setProperty("--py",s*.2+"px");$("hp").style.transform="translateY("+Math.min(s*-.06,0)+"px)";
+ const nk=$("nk");if(nk&&!document.body.classList.contains("in")){const r=nk.getBoundingClientRect();nk.style.setProperty("--rt",(((r.top+r.height/2)/innerHeight-.5)*-6).toFixed(2)+"deg")}},{passive:true});
+/* ===== accounts, worker and admin screens ===== */
+const AV=$("av"),AU=$("au"),IN={construction:"Construction",waste:"Waste management"};
+let D,me,mode="in",role="worker",vt,fails=0,lockT=0;
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),isA=()=>!!(me&&D.u[me]&&D.u[me].r==="admin");
+const hs=async(id,pw)=>{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(id+":"+pw+":wr1"));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")};
+IN["*"]="All industries";
+try{localStorage.removeItem("wr_db");D=JSON.parse(localStorage.getItem("wr_db2"))}catch(e){}
+D=D||{u:{W1:{n:"Ravi Kumar",h:"3c1dc908a6d28f3fc83d1dee1d7f335a7326ace39eacfd9aad10f0409fa695fe",r:"worker",i:"construction",w:700,ot:2.5,m:"9876543210"},W6:{n:"Meena S.",h:"e891cf5dfbf0b7f9fdd8592bc1b2dec579b9e265ab58dac1da53b7bae02e4465",r:"worker",i:"waste",w:600,ot:0},"ADM-MS7S":{n:"Chief Admin",h:"76f23fadcdaba375b7fa99641607acf63240cc08477511b661ae600090fff5f5",r:"admin",i:"*"}},a:{},c:[{id:"WR-1001",u:"W1",i:"construction",k:"Safety",t:"Scaffold plank cracked near Block B. People still use it.",an:0,s:0,o:"",d:"Today"}],l:[]};
+if(D.u.W1&&!D.u.W1.m&&!Object.values(D.u).some(x=>x.m==="9876543210"))D.u.W1.m="9876543210";
+const sv=()=>{try{localStorage.setItem("wr_db2",JSON.stringify(D))}catch(e){}};
+const log=(u,t)=>{D.l.push({d:new Date().toLocaleString(),u,t});sv()};
+function setM(m,r){mode=m||mode;role=mode==="up"?"worker":(r||role);$("mt").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===mode));$("rt").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.r===role));const up=mode==="up";$("at").textContent=up?"Create your employee account":"Welcome back";$("nw").hidden=$("iw").hidden=$("mw").hidden=!up;$("rt").hidden=up;$("cw").hidden=true;$("ae").textContent="";const t=up?"Employee accounts only. Admin accounts are created by your company.":role==="worker"?"Demo employee: <b>W1</b>, password <b>1234</b>.":"";$("ah").innerHTML=t;$("ah").hidden=!t}
+document.addEventListener("click",e=>{const o=e.target.closest("[data-o]");if(o){AU.showModal();setM(o.dataset.o,"worker")}
+ if(e.target.closest("#mt [data-m]"))setM(e.target.closest("[data-m]").dataset.m);if(e.target.closest("#rt [data-r]"))setM(null,e.target.closest("[data-r]").dataset.r);if(e.target.closest("[data-c]"))AU.close()});
+$("as").onclick=async()=>{const id=$("aui").value.trim().toUpperCase(),pw=$("apw").value,E=m=>$("ae").textContent=m;
+ if(Date.now()<lockT)return E("Too many tries. Wait 30 seconds.");
+ if(!id||!pw)return E("Enter your user ID and password.");
+ const h=await hs(id,pw);
+ if(mode==="in"){const u=D.u[id];if(!u||u.h!==h||u.r!==role){if(++fails>=5){lockT=Date.now()+3e4;fails=0}return E("ID, password or role is not right.")}fails=0;return login(id)}
+ const n=$("aun").value.trim();if(!n)return E("Enter your full name.");if(!/^[A-Z0-9_-]{2,16}$/.test(id))return E("ID: 2 to 16 letters or numbers.");if(D.u[id]||id.startsWith("ADM"))return E("That ID is not available.");if(pw.length<4)return E("Password needs 4 or more characters.");
+ const mob=ph10($("aum").value);if($("aum").value.trim()&&!mob)return E("Mobile number needs 10 digits.");if(mob&&Object.values(D.u).some(x=>x.m===mob))return E("That number is already linked to another ID.");
+ D.u[id]={n:n.slice(0,40),h,r:"worker",i:$("aii").value,w:0,ot:0,m:mob};log(id,"Employee account created"+(mob?" with phone linked":""));login(id)};
+function login(id){me=id;vt=null;CM.innerHTML="";AU.close();$("apw").value="";document.body.classList.add("in");log(id,"Signed in");if(D.u[id].m)$("sp").value=D.u[id].m;app();linkUI();scrollTo(0,0);toast("Welcome, "+D.u[id].n)}
+function app(){const u=D.u[me],adm=u.r==="admin",T=adm?[["q","Complaint queue"],["y","Pay settings"],["l","Audit log"]]:[["a","Attendance"],["p","Payslip"],["r","Report an issue"],["t","Tracking"]];
+ if(!T.some(x=>x[0]===vt))vt=T[0][0];
+ AV.innerHTML=`<div class="ah"><b>Work<span>Right</span></b><span class="s"></span><span class="tag">${adm?"Admin":"Employee"} · ${esc(u.n)}</span><span class="tag">${IN[u.i]}</span><button class="btn" data-a="out2" style="min-height:40px">Sign out</button></div><div class="at">${T.map(x=>`<button data-t="${x[0]}" aria-pressed="${x[0]===vt}">${x[1]}</button>`).join("")}</div><div class="ab" id="ab"></div>`;
+ $("ab").innerHTML=V[vt]();if(vt==="p")slip();
+ if(app.lv!==vt){app.lv=vt;[...$("ab").children].forEach((c,i)=>c.style.setProperty("--i",i));$("ab").classList.add("stg")}}
+let af="all";
+const dk=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"),t24=d=>String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"),mm=t=>{const a=t.split(":");return a[0]*60+ +a[1]},fd=k=>new Date(k+"T00:00").toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"});
+function gen(id){let q=[...id].reduce((a,c)=>(a*31+c.charCodeAt(0))>>>0,7);const r=()=>(q=(q*1664525+1013904223)>>>0)/4294967296,o=[],tm=m=>String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0"),NL=["Bus delay on the main road","Heavy rain at the site gate","Vehicle breakdown"],CH=["App","App","App","SMS","SMS","Call"];let w=0;
+ for(let n=14;n>=1;n--){const d=new Date();d.setDate(d.getDate()-n);const k=dk(d);if(d.getDay()===0){o.push({k,st:"off",n:"Weekly off",ch:"-"});continue}w++;const x=r(),ch=CH[Math.floor(r()*6)];
+  if(w===3)o.push({k,st:"leave",n:"Sick leave approved by Chief Admin",ch:"-"});
+  else if(w===9)o.push({k,st:"absent",n:"No check-in recorded",ch:"-"});
+  else if(w===5||w===11||x<.08){const i=545+Math.floor(r()*40);o.push({k,i:tm(i),o:tm(i+540),st:"late",n:NL[Math.floor(r()*3)],ch})}
+  else{const i=470+Math.floor(r()*44),ot=x>.7?60+Math.floor(r()*80):Math.floor(r()*15),y={k,i:tm(i),o:tm(i+540+ot),st:"ontime",n:ot>=60?"Overtime approved":"",ch};if(w===6){y.o=tm(i+565);y.fix=tm(i+540);y.n="Check-out corrected"}o.push(y)}}
+ return o}
+function hist(id=me){D.hs=D.hs||{};let r=(D.a[id]||[]).filter(x=>x.k);if(!D.hs[id]){const k0=r.map(x=>x.k);r=gen(id).filter(x=>!k0.includes(x.k)).concat(r);D.hs[id]=1}D.a[id]=r.slice(-15);return D.a[id]}
+function evs(r){const e=[];r.forEach(x=>{if(x.i){e.push({t:x.k+" "+x.i,a:"Check-in recorded via "+x.ch,by:"You",c:"log"});if(x.st==="late")e.push({t:x.k+" "+x.i,a:"Late flag added: arrived after 09:00",by:"System",c:"flag"})}
+ if(x.o)e.push({t:x.k+" "+x.o,a:"Check-out recorded via "+x.ch,by:"You",c:"log"});
+ if(x.n==="Overtime approved")e.push({t:x.k+" 19:30",a:"Overtime approved",by:"Chief Admin",c:"admin"});
+ if(x.st==="leave")e.push({t:x.k+" 09:10",a:x.n,by:"Chief Admin",c:"admin"});
+ if(x.st==="absent")e.push({t:x.k+" 10:00",a:"Marked absent: no check-in by 10:00",by:"System",c:"flag"});
+ if(x.fix)e.push({t:x.k+" 18:20",a:"Check-out corrected from "+x.fix+" to "+x.o+" after your request",by:"Chief Admin",c:"admin"})});
+ return e.sort((a,b)=>a.t<b.t?1:-1)}
+const hm=()=>new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),SN=["Received","Assigned","Resolved"],OW=["Safety Officer","HR Manager","Site Supervisor"];
+const V={
+a(){const r=hist(),now=new Date(),tk=dk(now),td=r.find(x=>x.k===tk),on=td&&td.i&&!td.o,done=td&&td.o,u=D.u[me],nm=now.getHours()*60+now.getMinutes();
+ const hrs=x=>x.i&&x.o?(mm(x.o)-mm(x.i)-60)/60:x.i?Math.max(0,(nm-mm(x.i))/60):0,P=r.filter(x=>x.i),H=P.reduce((a,x)=>a+hrs(x),0),OT=P.reduce((a,x)=>a+Math.max(0,hrs(x)-8),0),L=r.filter(x=>x.st==="late").length,AB=r.filter(x=>x.st==="absent").length,LV=r.filter(x=>x.st==="leave").length,WD=r.filter(x=>x.st!=="off").length,RT=Math.round(P.length/Math.max(1,WD-LV)*100);
+ const wk=[];for(let n=6;n>=0;n--){const d=new Date();d.setDate(d.getDate()-n);const x=r.find(y=>y.k===dk(d));wk.push([d.toLocaleDateString("en-IN",{weekday:"short"}),x?hrs(x):0])}
+ const ST={ontime:'<span class="tag">On time</span>',late:'<span class="tag am">Late</span>',absent:'<span class="tag b">Absent</span>',leave:'<span class="tag nt">Leave</span>',off:'<span class="tag nt">Weekly off</span>'},E=evs(r).filter(e=>af==="all"||e.c===af),site=u.i==="waste"?"Ward 12 Route and Recycling Yard":"Riverside Bridge Project, Block B";
+ return `<h2>Attendance</h2><div class="box"><div class="r2"><div><b>Today, ${now.toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"})}</b><small style="display:block;color:var(--mut)">${site} · Shift 08:00 to 17:00 · 1 h break</small></div>${on?'<span class="tag am">On shift</span>':done?'<span class="tag">Shift complete</span>':'<span class="tag nt">Not checked in</span>'}</div><p style="margin:.7rem 0">${on?"Checked in at <b>"+td.i+"</b>. On shift for <b>"+hrs(td).toFixed(1)+" h</b>. Do not forget to check out.":done?"You worked <b>"+hrs(td).toFixed(1)+" h</b> today ("+td.i+" to "+td.o+"). See you tomorrow.":"You have not checked in yet. Late after 09:00."}</p>${done?"":`<button class="btn pri" data-a="${on?"co":"ci"}" style="width:100%;min-height:56px;font-size:1.05rem">${on?"Check out":"Check in"}</button>`}<button class="btn hl" data-fc style="width:100%;margin-top:.6rem;min-height:50px;border-color:var(--g)">Camera: take photo and mark present ${u.f?'<span class="tag" style="margin-left:.4rem">Face saved</span>':'<span class="tag nt" style="margin-left:.4rem">Save your face first</span>'}</button></div>
+<div class="box"><div class="r2"><b>My phone number</b>${u.m?'<span class="tag">Linked</span>':'<span class="tag nt">Not linked</span>'}</div><p style="color:var(--mut);margin:.4rem 0 .6rem">Link your number to ID <b>${esc(me)}</b>. Then CHECKIN, CHECKOUT, PAY, REPORT, STATUS and SOS by SMS, and keys 1 to 5 and 9 on a call, work for your ID.</p><div class="r2" style="border:0"><input id="mph" type="tel" inputmode="numeric" placeholder="10-digit number" value="${esc(u.m||"")}" style="flex:1;min-width:10rem"><button class="btn pri" data-a="lnk">${u.m?"Update":"Link number"}</button>${u.m?'<button class="btn" data-a="unl">Remove</button>':""}</div><button class="btn" data-a="godemo" style="margin-top:.5rem;width:100%">Try SMS and Call now</button></div>
+<div class="kp"><div><span>Attendance rate</span><b>${RT}%</b></div><div><span>Hours worked</span><b>${H.toFixed(0)} h</b></div><div><span>Overtime</span><b>${OT.toFixed(1)} h</b></div><div><span>Late days</span><b>${L}</b></div><div><span>Absent</span><b>${AB}</b></div><div><span>Leave</span><b>${LV}</b></div></div>
+<h3>This week, hours per day</h3><div class="box"><div class="wk">${wk.map(w=>`<div><b>${w[1]?w[1].toFixed(1):"-"}</b><i style="height:${Math.min(100,w[1]/12*100)}%"></i>${w[0]}</div>`).join("")}</div></div>
+<h3>Attendance register, last 14 days</h3><div class="box tw"><table><thead><tr><th>Date</th><th>In</th><th>Out</th><th>Hours</th><th>Status</th><th>Via</th></tr></thead><tbody>${r.slice().reverse().map(x=>`<tr><td>${fd(x.k)}<small>${esc(x.n||"")}</small></td><td>${x.i||"-"}</td><td>${x.o||(x.i?"On shift":"-")}</td><td>${x.i?hrs(x).toFixed(1):"-"}</td><td>${ST[x.st]}</td><td>${x.ph?`<img class="fph" src="${x.ph}" alt="Photo taken at check-in"> `:""}${x.ch}</td></tr>`).join("")}</tbody></table></div>
+<h3>Attendance audit log, past 2 weeks</h3><div class="fl2">${[["all","All"],["log","Check-ins and outs"],["flag","System flags"],["admin","Admin actions"]].map(f=>`<button data-f="${f[0]}" aria-pressed="${af===f[0]}">${f[1]}</button>`).join("")}</div><div class="box"><div class="tl2">${E.map(e=>`<div>${esc(e.a)}<small>${fd(e.t.slice(0,10))} ${e.t.slice(11)} · by ${e.by}</small></div>`).join("")||"No entries."}</div></div>
+<p class="hint">Every attendance change is recorded here so nobody can alter your record without a trace.</p>`},
+p(){const u=D.u[me];return `<h2>Payslip</h2><div class="box slip" id="sl"></div><p class="hint">Your pay details are set by your employer's admin. You can view them but not change them.${u.w?"":" Your wage has not been set yet."}</p>`},
+r(){return `<h2>Report an issue</h2><div class="box"><label for="rk">What is the problem?</label><select id="rk"><option>Wages</option><option>Safety</option><option>Working hours</option><option>Harassment</option></select><label for="rt2">Tell us what happened</label><textarea id="rt2" placeholder="Write in any language"></textarea><label style="display:flex;gap:.5rem;align-items:center;font-weight:500"><input type="checkbox" id="ran" checked style="width:1.3rem;min-height:auto"> Keep my name private</label><p id="re" style="color:#f2605f;margin:.4rem 0"></p><button class="btn pri" data-a="rep" style="width:100%">Submit report</button></div>`},
+t(){const c=D.c.filter(x=>x.u===me).reverse();return `<h2>Complaint tracking</h2>${c.map(x=>`<div class="box"><div class="r2"><b>${x.id} · ${x.k}</b><span class="tag ${x.s?"":"b"}">${SN[x.s]}</span></div><p>${esc(x.t)}</p><div class="stp">${SN.map((_,i)=>`<i class="${i<=x.s?"on":""}"></i>`).join("")}</div><small style="color:var(--mut)">${x.o?"Owner: "+x.o:"Waiting for an owner"} · ${x.d}</small></div>`).join("")||'<div class="box">No reports yet.</div>'}`},
+q(){if(!isA())return"";const c=D.c.slice().reverse();return `<h2>Complaint queue</h2>${c.map(x=>`<div class="box"><div class="r2"><b>${x.id} · ${x.k}</b><span class="tag ${x.s?"":"b"}">${SN[x.s]}</span></div><p>${esc(x.t)}</p><small style="color:var(--mut)">From: ${x.an?"Anonymous worker":esc(D.u[x.u].n)}</small><div class="r2" style="margin-top:.6rem"><select data-own="${x.id}" style="max-width:12rem"><option value="">Assign owner…</option>${OW.map(o=>`<option ${o===x.o?"selected":""}>${o}</option>`).join("")}</select><button class="btn" data-a="res" data-i="${x.id}" ${x.s>1?"disabled":""}>Mark resolved</button></div></div>`).join("")||'<div class="box">No complaints.</div>'}`},
+y(){if(!isA())return"";const ws=Object.entries(D.u).filter(([,x])=>x.r==="worker");return `<h2>Pay settings</h2><p class="hint">Only admins can change these. Employees see them read-only on their payslip.</p>${ws.map(([id,x])=>`<div class="box"><b>${esc(x.n)}</b> <small style="color:var(--mut)">${esc(id)} · ${IN[x.i]}</small><div class="r2" style="margin-top:.6rem"><label style="margin:0">Daily wage ₹<input type="number" min="0" data-w="${esc(id)}" value="${x.w||0}" style="width:7rem"></label><label style="margin:0">Overtime hours<input type="number" min="0" step=".5" data-ot="${esc(id)}" value="${x.ot||0}" style="width:6rem"></label><button class="btn pri" data-a="svp" data-i="${esc(id)}">Save</button></div></div>`).join("")||'<div class="box">No employees yet.</div>'}`},
+l(){if(!isA())return"";return `<h2>Audit log</h2><div class="box">${D.l.slice(-30).reverse().map(x=>`<div class="r2"><span>${x.t}</span><small style="color:var(--mut)">${x.u} · ${x.d}</small></div>`).join("")}</div>`}};
+function slip(){const u=D.u[me],w=u.w||0,o=u.ot||0,b=w*6,ot=Math.round(w/8*1.5*o),pf=Math.round(b*.12);$("sl").innerHTML=`<div><span>6 days × ₹${w}</span><b>${R(b)}</b></div><div><span>Overtime ${o}h (1.5×)</span><b>+ ${R(ot)}</b></div><div><span>PF and insurance (12%)</span><b>− ${R(pf)}</b></div><div class="t"><span>Take home</span><b>${R(b+ot-pf)}</b></div>`}
+AV.addEventListener("change",e=>{const id=e.target.dataset.own;if(!id)return;if(!isA())return toast("Admins only");const c=D.c.find(x=>x.id===id);c.o=e.target.value;if(c.o&&c.s<1)c.s=1;log(me,id+" assigned to "+(c.o||"nobody"));app();toast("Owner updated")});
+AV.addEventListener("click",e=>{const t=e.target.closest("[data-t]");if(t){vt=t.dataset.t;return app()}const fb=e.target.closest("[data-f]");if(fb){af=fb.dataset.f;return app()}const b=e.target.closest("[data-a]");if(!b)return;const k=b.dataset.a;if(["res","svp"].includes(k)&&!isA())return toast("Admins only");
+ if(k==="out2"){document.body.classList.remove("in");me=null;CM.innerHTML="";return scrollTo(0,0)}
+ if(k==="godemo"){document.getElementById("demo").scrollIntoView();return}
+ if(k==="lnk"){const n=ph10($("mph").value);if(!n)return toast("Enter a 10-digit mobile number");const o=Object.keys(D.u).find(x=>D.u[x].m===n&&x!==me);if(o)return toast("That number is already linked to another ID");D.u[me].m=n;log(me,"Phone linked ("+n.slice(0,2)+"******"+n.slice(-2)+")");$("sp").value=n;try{localStorage.setItem("ss_ph",n)}catch(e){}toast("Phone linked to "+me)}
+ if(k==="unl"){D.u[me].m="";log(me,"Phone unlinked");toast("Phone number removed")}
+ if(k==="ci"){const n=new Date(),r=hist();if(!r.some(x=>x.k===dk(n))){r.push({k:dk(n),i:t24(n),o:"",st:n.getHours()>=9?"late":"ontime",n:"",ch:"App"});log(me,"Checked in");toast("Checked in. Stay safe.")}}
+ if(k==="co"){const x=hist().find(y=>y.k===dk(new Date()));if(x&&!x.o){x.o=t24(new Date());log(me,"Checked out");toast("Checked out. See you tomorrow.")}}
+ if(k==="rep"){const t=$("rt2").value.trim();if(t.length<10)return $("re").textContent="Please write a little more (10+ letters).";const id="WR-"+(1001+D.c.length);D.c.push({id,u:me,i:D.u[me].i,k:$("rk").value,t,an:$("ran").checked?1:0,s:0,o:"",d:new Date().toLocaleDateString()});log(me,"Report "+id+" filed");vt="t";toast("Report sent. Reference "+id)}
+ if(k==="res"){const c=D.c.find(x=>x.id===b.dataset.i);c.s=2;log(me,c.id+" resolved");toast(c.id+" resolved")}
+ if(k==="svp"){const i=b.dataset.i,w=+AV.querySelector('[data-w="'+i+'"]').value,o=+AV.querySelector('[data-ot="'+i+'"]').value;if(!(w>=0&&w<=10000&&o>=0&&o<=60))return toast("Enter a valid wage and overtime");D.u[i].w=w;D.u[i].ot=o;log(me,"Pay set for "+i+": ₹"+w+"/day, "+o+"h overtime");toast("Pay saved for "+D.u[i].n)}
+ sv();app();linkUI()});
+/* ===== AI Agent ===== */
+const CB=$("cbp"),CM=$("cbm");
+function msg(t,c,go){const d=document.createElement("div");d.className=c;d.textContent=t;if(go&&me){const b=document.createElement("button");b.className="lk";b.textContent="Open "+go[1];b.onclick=()=>{vt=go[0];app()};d.appendChild(b)}CM.appendChild(d);CM.scrollTop=1e5}
+function chips(){const u=me&&D.u[me],L=!u?["How does SMS work?","How do I link my phone?","How is pay calculated?","Which languages are supported?"]:u.r==="admin"?["How many open complaints?","How do I set pay?","What is in the audit log?"]:["Mark me present","What is my pay this week?","How is my attendance?","Track my complaint","How do I link my phone?"];$("cbq").innerHTML="";L.forEach(x=>{const b=document.createElement("button");b.textContent=x;b.onclick=()=>ask(x);$("cbq").appendChild(b)})}
+function ask(q){q=(q||$("cbi").value).trim();if(!q)return;$("cbi").value="";msg(q,"u");const t=document.createElement("div");t.className="b";t.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';CM.appendChild(t);CM.scrollTop=1e5;setTimeout(()=>{t.remove();const a=ans(q);msg(a[0],"b",a[1]);chips()},600)}
+function ans(q){q=q.toLowerCase();const u=me&&D.u[me],W=u&&u.r==="worker",A=u&&u.r==="admin",h=(...k)=>k.some(x=>q.includes(x));
+ if(h("sos","emergency","danger","injur","accident","hurt","fire"))return["If anyone is hurt or in danger, call 112 first. Then tell your supervisor and send SOS by SMS to 56767, or press 9 on the voice line. Move away from the hazard if it is safe to do so."];
+ if(W&&h("mark me","check me in","check me out","clock in","clock out","punch"))return[h("out")?aCO(me,"AI Agent"):aCI(me,"AI Agent"),["a","Attendance"]];
+ if(h("link")&&h("phone","number","mobile","sms"))return["Sign in, open Attendance, My phone, type your 10-digit mobile number and press Link number (or add it when you sign up). From then on, SMS and calls from that number act on your own ID: CHECKIN, CHECKOUT, PAY, REPORT, STATUS and SOS.",W?["a","Attendance"]:0];
+ if(h("face","camera","selfie","photo"))return["Tap the Face attendance camera button at the bottom left. Type your user ID and look at the camera. Use 'Take photo and save my face' once (needs your password unless you are signed in), then 'Take photo and mark present' each day. The photo is saved with that day's attendance. Matching is demo-level, so an admin should still review records."];
+ if(A){if(h("complaint","queue","open","report")){const c=D.c,o=c.filter(x=>x.s<2).length,n=c.filter(x=>!x.o).length;return["There are "+c.length+" complaints: "+o+" still open and "+n+" without an owner. Assign an owner and mark each one resolved in the queue.",["q","Complaint queue"]]}
+  if(h("pay","wage","salary","overtime"))return["Open Pay settings, enter each employee's daily wage and overtime hours, then press Save. Employees can only view their payslip. Every change is written to the audit log.",["y","Pay settings"]];
+  if(h("audit","log","who"))return["The audit log records sign-ins, pay changes, assignments and resolutions, each with the user ID and time.",["l","Audit log"]]}
+ if(h("overtime")){const o=W?" Your overtime this week is "+(u.ot||0)+" h.":"";return["Overtime is calculated at 1.5 times your hourly rate (daily wage divided by 8) in this app."+o+" Legal overtime rates can be higher in some states, so check your state rules or ask the labour office if it looks low.",W?["p","Payslip"]:0]}
+ if(h("pay","salary","wage","sambalam","vetan","tankhwah","paisa","payslip")&&!h("minimum")){if(W){if(!u.w)return["Your wage has not been set yet. Ask your admin to set it in Pay settings.",["p","Payslip"]];const w=u.w,o=u.ot||0,b=w*6,ot=Math.round(w/8*1.5*o),pf=Math.round(b*.12);return["This week: "+R(b)+" base (6 days at "+R(w)+"), plus "+R(ot)+" overtime ("+o+" h), minus "+R(pf)+" PF and insurance. Take home: "+R(b+ot-pf)+".",["p","Payslip"]]}
+  return["Pay = days worked x daily wage, plus overtime at 1.5x, minus 12% PF and insurance. Sign in as an employee to see your own figures. Only your employer's admin can change pay details."]}
+ if(h("minimum"))return["Minimum wages differ by state and type of work. Compare your daily wage with your state's notified rate. If yours is lower, report it as a Wages issue so it can be reviewed."];
+ if(h("attend","hazri","check in","check-in","late","absent")){if(W){const r=hist(),P=r.filter(x=>x.i).length,L=r.filter(x=>x.st==="late").length,AB=r.filter(x=>x.st==="absent").length,td=r.find(x=>x.k===dk(new Date()));return["Last 14 days: "+P+" days present, "+L+" late, "+AB+" absent. "+(td&&td.i?"Today you checked in at "+td.i+".":"You have not checked in today. Say 'mark me present' and I will do it.")+" Late means after 09:00.",["a","Attendance"]]}
+  return["Check in from the Attendance page, with the face camera, by SMS (send CHECKIN to 56767 from your linked number), or by phone (call 1800 100 200 and press 1). Every entry is kept in an audit log."]}
+ if(h("track","status","where is my")){if(W){const c=D.c.filter(x=>x.u===me);if(!c.length)return["You have no reports yet. Use Report an issue to raise one.",["r","Report an issue"]];const x=c[c.length-1];return["Your latest report "+x.id+" ("+x.k+") is "+SN[x.s].toLowerCase()+(x.o?" and owned by "+x.o:" and waiting for an owner")+". You have "+c.length+" report(s) in total.",["t","Tracking"]]}return["Sign in as an employee to follow a report. You can also send STATUS by SMS."]}
+ if(h("report","complain","shikayat","pukar","harass","unsafe","problem","issue"))return["Open Report an issue, choose Wages, Safety, Working hours or Harassment, and describe what happened. Tick Keep my name private if you prefer. You will get a reference number to follow progress.",W?["r","Report an issue"]:0];
+ if(h("right","leave","hours","pf","insurance","holiday","legal","law"))return["General information, not legal advice: a normal day is about 8 hours and a week about 48 hours. You should get a weekly day off, pay for overtime, and PF and insurance shown on your payslip. Rules differ by state. If something looks wrong, report it as a Wages or Hours issue."];
+ if(h("sms","text","call","phone","ivr","helpline"))return["Link your mobile number to your ID first (Attendance, My phone). Then text CHECKIN, CHECKOUT, PAY, REPORT (plus what happened), STATUS or SOS to 56767 from that number. Or call 1800 100 200 and press 1 check in, 2 pay, 3 report, 4 status, 5 check out, 9 SOS. These are demo numbers."];
+ if(h("language","bhasha","mozhi","tamil","hindi","telugu"))return["WorkRight supports English, Hindi, Tamil, Telugu, Bengali, Marathi, Kannada, Malayalam, Gujarati, Punjabi and Odia. Use the language menu in the top bar."];
+ if(h("private","privacy","anonym","secret"))return["If you tick Keep my name private, admins see 'Anonymous worker' on your report. Passwords are stored as hashes and every admin action is recorded in the audit log."];
+ if(h("hello","hey","namaste","vanakkam")||/^hi\b/.test(q))return["Hello"+(u?", "+u.n.split(" ")[0]:"")+". Ask me about pay, attendance, reporting a problem, your rights, or using SMS and calls. I can also mark you present."];
+ if(h("thank"))return["You are welcome. Ask me anything else any time."];
+ return["I can help with pay, overtime, attendance, reporting a problem, tracking a report, your rights, SOS, and SMS or phone access. I can also mark you present. Try one of the suggestions below."]}
+$("cbf").onclick=()=>{CB.hidden=!CB.hidden;if(!CB.hidden){if(!CM.children.length)msg("Hello"+(me?", "+D.u[me].n.split(" ")[0]:"")+". I am the WorkRight AI Agent. I answer using your own attendance, pay and report data, and I can mark you present. What do you need?","b");chips();$("cbi").focus()}};
+$("cbx").onclick=()=>{CB.hidden=true};$("cbs").onclick=()=>ask();$("cbi").onkeydown=e=>{if(e.key==="Enter")ask()};
+document.addEventListener("click",e=>{if(e.target.closest("[data-ai]")&&CB.hidden)$("cbf").click()});
+const SV={clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',wallet:'<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-3v3"/><circle cx="17" cy="14" r="1"/>',shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',scale:'<path d="M12 3v18M5 21h14M5 7h14"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>',book:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/>',alert:'<path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/>',bell:'<path d="M6 17v-6a6 6 0 0 1 12 0v6l2 2H4z"/><path d="M10 21a2 2 0 0 0 4 0"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',check:'<path d="M5 12l5 5 9-10"/>',phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>'};
+document.querySelectorAll("[data-i]").forEach(e=>e.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+SV[e.dataset.i]+'</svg>');
+/* ===== face camera attendance ===== */
+const FC=$("fc"),FV=$("fv"),FS=$("fst"),FR=$("fres"),FSN=$("fsnap"),FW=$("fw"),FB=["fon","freg","fmk","fvw","fph"];
+let fstream=null,ff=0,flock=0,fsnapT=0,FMODE="mark";
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const fset=(m,bad)=>{FS.textContent=m;FS.style.color=bad?"#f2605f":"var(--mut)";FS.style.borderColor=bad?"#f2605f":"var(--line)"};
+const fbusy=b=>FB.forEach(i=>$(i).disabled=b);
+function hideSnap(){clearTimeout(fsnapT);FSN.hidden=true;FW.classList.remove("snapped")}
+function showSnap(url,mirror){FSN.src=url;FSN.style.transform=mirror?"scaleX(-1)":"none";FSN.hidden=false;FW.classList.add("snapped");const f=$("fflash");f.classList.remove("go");void f.offsetWidth;f.classList.add("go");clearTimeout(fsnapT);fsnapT=setTimeout(hideSnap,4000)}
+async function fstart(){
+ if(fstream&&FV.srcObject)return true;
+ if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){fset("This page cannot open the camera directly (it needs HTTPS or a local file in a normal browser tab).",1);return false}
+ let err=null;fstream=null;
+ for(const c of[{video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},audio:false},{video:true,audio:false}]){
+  try{fstream=await navigator.mediaDevices.getUserMedia(c);break}catch(e){err=e;if(e&&(e.name==="NotAllowedError"||e.name==="SecurityError"||e.name==="NotFoundError"))break}}
+ if(!fstream){const n=err&&err.name;
+  fset(n==="NotAllowedError"||n==="SecurityError"?"Camera is blocked. Allow the camera for this page in your browser (lock icon near the address bar), or open the page in its own tab.":n==="NotFoundError"?"No camera was found on this device.":n==="NotReadableError"?"The camera is in use by another app. Close it and try again.":"Could not open the camera.",1);return false}
+ FV.srcObject=fstream;try{await FV.play()}catch(e){}
+ FW.classList.add("live");hideSnap();fset("Camera is on. Keep your face inside the oval, in good light.");return true}
+function fstop(){if(fstream){fstream.getTracks().forEach(t=>t.stop());fstream=null}FV.srcObject=null;FW.classList.remove("live");hideSnap()}
+async function fready(){for(let i=0;i<40&&!(FV.videoWidth>0);i++)await sleep(100);await sleep(500);return FV.videoWidth>0}
+/* one photo -> small grayscale descriptor + thumbnail + full snapshot */
+function fgrab(src){const vid=src===FV,w=vid?FV.videoWidth:src.naturalWidth,h=vid?FV.videoHeight:src.naturalHeight;
+ if(!w||!h)return{err:"Camera is not ready yet. Wait a second and try again."};
+ const s=Math.min(w,h)*(vid?.7:.8),sx=(w-s)/2,sy=(h-s)/2;
+ const c=document.createElement("canvas");c.width=c.height=96;const x=c.getContext("2d");x.imageSmoothingQuality="high";x.drawImage(src,sx,sy,s,s,0,0,96,96);
+ const p=c.toDataURL("image/jpeg",.6);let cur=c;
+ for(const z of[48,24]){const n=document.createElement("canvas");n.width=n.height=z;const nx=n.getContext("2d",{willReadFrequently:true});nx.imageSmoothingQuality="high";nx.drawImage(cur,0,0,z,z);cur=n}
+ const d=cur.getContext("2d").getImageData(0,0,24,24).data,g=[];for(let i=0;i<d.length;i+=4)g.push(.299*d[i]+.587*d[i+1]+.114*d[i+2]);
+ const m=g.reduce((a,b)=>a+b)/g.length,sd=Math.sqrt(g.reduce((a,b)=>a+(b-m)**2,0)/g.length);
+ if(sd<10)return{err:"The photo is too dark or too plain. Move to better light and face the camera."};
+ const k=document.createElement("canvas"),sc=Math.min(1,480/w);k.width=Math.round(w*sc);k.height=Math.round(h*sc);k.getContext("2d").drawImage(src,0,0,k.width,k.height);
+ return{v:g.map(a=>+((a-m)/sd).toFixed(2)),p,snap:k.toDataURL("image/jpeg",.7)}}
+const cor=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0)/a.length;
+const FST={ontime:["","On time"],late:["am","Late"],absent:["b","Absent"],leave:["nt","Leave"],off:["nt","Weekly off"]};
+function fshow(id){const u=D.u[id],r=hist(id),td=r.find(x=>x.k===dk(new Date())),P=r.filter(x=>x.i).length;
+ FR.innerHTML=`<div class="box" style="margin:0"><div class="r2"><div style="display:flex;gap:.7rem;align-items:center">${u.f?`<img src="${u.f.p}" alt="Saved face of ${esc(u.n)}" width="48" height="48" style="border-radius:50%;object-fit:cover">`:""}<div><b>${esc(u.n)}</b><small style="display:block;color:var(--mut)">${esc(id)} · ${IN[u.i]}</small></div></div>${td&&td.i?'<span class="tag">Present '+td.i+'</span>':'<span class="tag nt">Not present today</span>'}</div><small style="color:var(--mut);display:block;margin:.5rem 0">Last 14 days: ${P} days present</small>${r.slice(-7).reverse().map(x=>`<div class="r2"><span style="display:flex;gap:.5rem;align-items:center">${x.ph?`<img class="fph" src="${x.ph}" alt="Photo taken at check-in">`:""}${fd(x.k)}</span><span style="color:var(--mut);font-size:.84rem">${x.i||"-"} to ${x.o||(x.i?"on shift":"-")} · ${x.ch}</span><span class="tag ${FST[x.st][0]}">${FST[x.st][1]}</span></div>`).join("")}</div>`}
+const syncPw=()=>{const id=$("fid").value.trim().toUpperCase();$("pww").hidden=!!(me&&(me===id||isA()))};
+function openF(){FC.showModal();$("fid").value=me||$("fid").value||"";$("fpw").value="";FR.innerHTML="";syncPw();fset("Starting the camera...");fstart()}
+async function fgo(kind,img){
+ FMODE=kind;
+ if(Date.now()<flock)return fset("Too many tries. Wait 30 seconds.",1);
+ const id=$("fid").value.trim().toUpperCase();
+ if(!id)return fset("Type the user ID first.",1);
+ const u=D.u[id];if(!u)return fset("There is no account with ID "+id+". Check the ID.",1);
+ if(kind==="reg"&&!(me===id||isA())){const pw=$("fpw").value;if(!pw)return fset("Type this ID's password to save a face.",1);
+  if(u.h!==await hs(id,pw)){if(++ff>=5){flock=Date.now()+3e4;ff=0}return fset("Wrong password for "+id+".",1)}}
+ if(kind!=="reg"&&!u.f)return fset("No face is saved for "+id+" yet. Tap 'Take photo and save my face' first.",1);
+ fbusy(true);
+ try{
+  let src=img;
+  if(!src){
+   if(!await fstart()){fset("Camera unavailable. Opening your phone camera app instead...",1);$("ffile").click();return}
+   if(!await fready())return fset("The camera has no picture yet. Wait a second and try again.",1);
+   src=FV}
+  fset(kind==="reg"?"Hold still. Taking photos...":"Hold still. Taking your photo...");
+  const shots=[],n=img?1:3;
+  for(let i=0;i<n;i++){const g=fgrab(src);if(g.err)return fset(g.err,1);shots.push(g);if(i===0)showSnap(g.snap,!img);if(i<n-1)await sleep(350)}
+  if(kind==="reg"){
+   ff=0;u.f={s:shots.map(g=>g.v),p:shots[0].p,t:new Date().toLocaleDateString("en-IN")};log(me||id,"Face saved for "+id);sv();$("fpw").value="";
+   fset("Face saved for "+u.n+". Now tap 'Take photo and mark present'.");toast("Face saved for "+u.n);fshow(id);if(me)app();return}
+  let best=-1;shots.forEach(g=>u.f.s.forEach(e=>{best=Math.max(best,cor(g.v,e))}));
+  const pct=Math.max(0,Math.round(best*100));
+  if(best<.75){if(++ff>=5){flock=Date.now()+3e4;ff=0}return fset("The face did not match "+id+" ("+pct+"% match, needs 75%). Face the camera in good light and try again.",1)}
+  ff=0;
+  if(kind==="mark"){const rr=hist(id),nw=new Date(),td=rr.find(x=>x.k===dk(nw));
+   if(td&&td.i)fset("Already marked present today at "+td.i+" ("+pct+"% match).");
+   else{rr.push({k:dk(nw),i:t24(nw),o:"",st:nw.getHours()>=9?"late":"ontime",n:"Face verified",ch:"Camera",ph:shots[0].p});log(id,"Marked present by face");sv();fset("Photo taken. "+u.n+" is marked present at "+t24(nw)+" ("+pct+"% match).");toast(u.n+" marked present")}}
+  else fset("Match "+pct+"%. Showing "+u.n+"'s attendance.");
+  fshow(id);if(me)app();linkUI();
+ }finally{fbusy(false)}}
+$("cfb").onclick=openF;
+document.addEventListener("click",e=>{if(e.target.closest("[data-fc]"))openF()});
+$("fx").onclick=()=>FC.close();FC.addEventListener("close",fstop);
+$("fid").oninput=syncPw;
+$("fon").onclick=async()=>{fbusy(true);await fstart();fbusy(false)};
+$("fmk").onclick=()=>fgo("mark");$("freg").onclick=()=>fgo("reg");$("fvw").onclick=()=>fgo("view");
+$("fph").onclick=()=>{FMODE=FMODE||"mark";fset("Your phone camera app will open and do: "+({mark:"mark present",reg:"save my face",view:"view attendance"}[FMODE])+".");$("ffile").click()};
+$("ffile").onchange=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;const im=new Image();im.onload=()=>{fgo(FMODE,im);URL.revokeObjectURL(im.src)};im.onerror=()=>fset("That photo could not be read. Try again.",1);im.src=URL.createObjectURL(f)};
+/* init */
+renderSlip();let sl="en";try{sl=localStorage.getItem("ss_l")||"en"}catch(e){}setL(T[sl]?sl:"en");
+try{const sp=localStorage.getItem("ss_ph");if(sp)$("sp").value=sp}catch(e){}
+linkUI();
+setTimeout(()=>$("splash").classList.add("out"),2200);
+</script></body></html>
